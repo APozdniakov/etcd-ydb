@@ -1,0 +1,11 @@
+etcd-ydb
+Copyright 2023 The Apache Software Foundation
+
+This product includes software developed at
+The Apache Software Foundation (http://www.apache.org/).
+
+This product includes software components originally
+developed for etcd (https://github.com/etcd-io/etcd),
+licensed under the Apache 2.0 license. The licensing terms
+for etcd code can be found at:
+https://github.com/etcd-io/etcd/blob/main/LICENSE
