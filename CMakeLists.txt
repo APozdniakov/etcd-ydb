@@ -5,6 +5,8 @@ set(BUILD_SHARED_LIBS Off)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_EXTENSIONS Off)
 
+message(STATUS "Using toolchain file: ${CMAKE_TOOLCHAIN_FILE}")
+
 include(cmake/conan.cmake)
 
 conan_cmake_autodetect(settings)
