@@ -21,5 +21,6 @@ conan_cmake_install(
 include(${CMAKE_BINARY_DIR}/conan_paths.cmake)
 
 find_package(gRPC 1.50.1 EXACT REQUIRED)
+find_package(Protobuf 3.21.9 EXACT REQUIRED)
 
-#add_subdirectory(etcd)
+add_subdirectory(proto)
