@@ -19,7 +19,7 @@ https://github.com/grpc-ecosystem/grpc-gateway/blob/main/LICENSE.txt
 This product includes software components originally
 developed for googleapis (https://github.com/googleapis/googleapis),
 licensed under the Apache 2.0 license. The licensing terms
-for etcd code can be found at:
+for googleapis code can be found at:
 https://github.com/googleapis/googleapis/blob/master/LICENSE
 
 This product includes software components originally
