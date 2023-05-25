@@ -9,3 +9,9 @@ developed for etcd (https://github.com/etcd-io/etcd),
 licensed under the Apache 2.0 license. The licensing terms
 for etcd code can be found at:
 https://github.com/etcd-io/etcd/blob/main/LICENSE
+
+This product includes software components originally
+developed for grpc-gateway (https://github.com/grpc-ecosystem/grpc-gateway)
+licensed under the BSD-3-Clause license. The licensing terms
+for grpc-gateway code can be found at:
+https://github.com/grpc-ecosystem/grpc-gateway/blob/main/LICENSE.txt
