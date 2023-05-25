@@ -14,12 +14,15 @@
 ## How to Build
 
 ### local
+
 ```bash
 mkdir -p cmake_build
 cmake -DCMAKE_BUILD_TYPE=Debug -G Ninja -DCMAKE_TOOLCHAIN_FILE=clang.toolchain -S . -B cmake_build
 cmake --build cmake_build
 ```
+
 ### dockerized
+
 ```bash
 mkdir -p cmake_build
 docker build -t etcd-ydb:dev -f Dockerfile .
