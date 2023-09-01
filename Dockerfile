@@ -3,12 +3,12 @@
 FROM ubuntu:22.04
 
 RUN apt-get update && apt-get install -y \
-    clang-12 \
+    clang-14 \
     cmake \
     gdb \
     git \
-    lld-12 \
-    lldb-12 \
+    lld-14 \
+    lldb-14 \
     make \
     ninja-build \
     python3 \
