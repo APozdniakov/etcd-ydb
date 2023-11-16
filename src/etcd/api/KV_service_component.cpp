@@ -12,7 +12,7 @@ userver::yaml_config::Schema KVServiceComponent::GetStaticConfigSchema() {
   return userver::yaml_config::MergeSchemas<
       userver::ugrpc::server::ServiceComponentBase>(R"(
 type: object
-description: gRPC sample greater service component
+description: gRPC KV service component
 additionalProperties: false
 properties:
     greeting-prefix:

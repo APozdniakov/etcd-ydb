@@ -1,20 +1,14 @@
 components_manager:
-
   task_processors:
     grpc-blocking-task-processor:
       worker_threads: 2
       thread_name: grpc-worker
-
     main-task-processor:
       worker_threads: 8
-
     fs-task-processor:
       worker_threads: 2
-
   default_task_processor: main-task-processor
-
   components:
-
     logging:
       fs-task-processor: fs-task-processor
       loggers:
@@ -22,16 +16,13 @@ components_manager:
           file_path: '@stderr'
           level: debug
           overflow_behavior: discard
-
     grpc-server:
       port: 2379
       completion-queue-count: 3
-
     kv-service:
       task-processor: main-task-processor
       greeting-prefix: KV
       middlewares: []
-
     server:
       listener:
         port: 8092

@@ -5,6 +5,8 @@
 #include <string_view>
 
 #include <userver/components/component_config.hpp>
+#include <userver/components/component_context.hpp>
+#include <userver/yaml_config/schema.hpp>
 
 #include <etcd/api/etcdserverpb/rpc_service.usrv.pb.hpp>
 
@@ -14,11 +16,11 @@ class KVServiceComponent final : public KVBase::Component {
   static constexpr std::string_view kName = "kv-service";
 
   KVServiceComponent(const userver::components::ComponentConfig& config,
-                       const userver::components::ComponentContext& context)
+                     const userver::components::ComponentContext& context)
       : KVBase::Component(config, context),
         prefix_(config["greeting-prefix"].As<std::string>()) {}
-  // TODO [pavelbezpravel]: check greeting-prefix.
 
+  // TODO [pavelbezpravel]: stub.
   void Range(RangeCall& call, RangeRequest&& request) override;
 
   static userver::yaml_config::Schema GetStaticConfigSchema();
@@ -27,4 +29,5 @@ class KVServiceComponent final : public KVBase::Component {
   const std::string prefix_;
 };
 }  // namespace etcdserverpb
+
 #endif  // ETCD_YDB_KV_SERVICE_COMPONENT_H
