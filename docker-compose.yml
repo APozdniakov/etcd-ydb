@@ -1,28 +1,17 @@
-version: "3"
+version: "3.3"
 services:
-  ydb:
-    container_name: ydb-local
-    hostname: localhost
-    image: cr.yandex/yc/yandex-docker-local-ydb
-    ports:
-      - "2135:2135"
-      - "2136:2136"
-      - "8765:8765"
-    environment:
-      YDB_DEFAULT_LOG_LEVEL: "NOTICE"
-      GRPC_TLS_PORT: "2135"
-      GRPC_PORT: "2136"
-      MON_PORT: "8765"
-    volumes:
-      - ./ydb_certs:/ydb_certs
-      - ./ydb_data:/ydb_data
   etcd-ydb:
-    container_name: etcd-ydb-local
     build:
       context: ./
       dockerfile: Dockerfile
+    command: ["./etcd-ydb", "-c", "/etc/etcd-ydb/configs/static_config.yaml"]
+    configs:
+      - source: etcd-ydb-static-config
+        target: /etc/etcd-ydb/configs/static_config.yaml
+    container_name: etcd-ydb-local
     ports:
       - "2379:2379"
       - "2380:2380"
-    depends_on:
-      - ydb
+configs:
+  etcd-ydb-static-config:
+    file: ./configs/static_config.yaml

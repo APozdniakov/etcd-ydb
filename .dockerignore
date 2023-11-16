@@ -6,5 +6,3 @@ Dockerfile
 .gitignore
 .gitmodules
 .idea/
-ydb_certs/
-ydb_data/

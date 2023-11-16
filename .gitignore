@@ -1,4 +1,2 @@
 cmake_build/
 .idea/
-ydb_certs/
-ydb_data/
