@@ -14,8 +14,8 @@ include(GrpcTargets)
 add_grpc_library(etcd-api-proto PROTOS ${PROTOS})
 
 add_executable(${PROJECT_NAME}
-        src/etcd/api/KV_service_component.cpp
-        src/etcd/api/KV_service_component.h
+        src/components/etcd/api/KV_service_component.cpp
+        src/components/etcd/api/KV_service_component.h
         src/main.cpp)
 target_link_libraries(${PROJECT_NAME}
     PRIVATE

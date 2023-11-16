@@ -1,4 +1,4 @@
-#include "etcd/api/KV_service_component.h"
+#include "components/etcd/api/KV_service_component.h"
 
 #include <userver/components/minimal_server_component_list.hpp>
 #include <userver/ugrpc/server/server_component.hpp>
