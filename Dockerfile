@@ -21,8 +21,7 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /etcd-ydb
 COPY ./ ./
 
-RUN mkdir -p cmake_build \
-    && cmake \
+RUN cmake \
     -DCMAKE_BUILD_TYPE=Release \
     -G Ninja \
     -DCMAKE_TOOLCHAIN_FILE=clang.toolchain \
@@ -30,7 +29,8 @@ RUN mkdir -p cmake_build \
     -B cmake_build \
     && cmake \
     --build cmake_build \
-    -j $(nproc)
+    -j "$(nproc)"
 
-WORKDIR cmake_build
+WORKDIR /etcd-ydb/cmake_build
 ENTRYPOINT ["./etcd-ydb"]
+CMD ["-c", "/etcd-ydb/configs/static_config.yaml"]
