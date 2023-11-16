@@ -13,7 +13,10 @@ file(GLOB_RECURSE PROTOS ${CMAKE_CURRENT_SOURCE_DIR}/proto/*.proto) # TODO [pave
 include(GrpcTargets)
 add_grpc_library(etcd-api-proto PROTOS ${PROTOS})
 
-add_executable(${PROJECT_NAME} src/main.cpp)
+add_executable(${PROJECT_NAME}
+        src/etcd/api/KV_service_component.cpp
+        src/etcd/api/KV_service_component.h
+        src/main.cpp)
 target_link_libraries(${PROJECT_NAME}
     PRIVATE
        etcd-api-proto
