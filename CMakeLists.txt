@@ -21,3 +21,18 @@ target_link_libraries(${PROJECT_NAME}
     PRIVATE
        etcd-api-proto
 )
+target_compile_options(${PROJECT_NAME}
+    PRIVATE
+        -Werror
+        -Wall
+        -Wextra
+        -Wassign-enum
+        -Wcast-align
+        -Wcast-qual
+        -Wconversion
+        -Wextra-semi
+        -Wsign-compare
+        -Wsign-conversion
+        -pedantic
+        -pedantic-errors
+)
