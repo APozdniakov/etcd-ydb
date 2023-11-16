@@ -1,13 +1,10 @@
-# docker build -t etcd-ydb/dev -f Dockerfile .
-
-# TODO [pavelbezpravel]: move to .devcontainers/
+# syntax=docker/dockerfile:1
 
 FROM ghcr.io/userver-framework/ubuntu-userver-build-base:v2
 
 RUN apt-get update && apt-get install -y \
     clang-14 \
     cmake \
-    gdb \
     git \
     lld-14 \
     lldb-14 \
@@ -17,9 +14,23 @@ RUN apt-get update && apt-get install -y \
     pkg-config \
     python3 \
     python3-pip \
-    valgrind
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* \
+    && pip3 install conan==1.61.0
 
-RUN pip3 install conan==1.61.0
+WORKDIR /etcd-ydb
+COPY ./ ./
 
-ARG UID=1000
-RUN useradd -m -u ${UID} -s /bin/bash builder
+RUN mkdir -p cmake_build \
+    && cmake \
+    -DCMAKE_BUILD_TYPE=Release \
+    -G Ninja \
+    -DCMAKE_TOOLCHAIN_FILE=clang.toolchain \
+    -S . \
+    -B cmake_build \
+    && cmake \
+    --build cmake_build \
+    -j $(nproc)
+
+WORKDIR cmake_build
+ENTRYPOINT ["./etcd-ydb"]

@@ -1,6 +1,0 @@
-[requires]
-grpc/1.54.3
-
-[generators]
-cmake_find_package
-cmake_paths
