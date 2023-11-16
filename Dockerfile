@@ -31,6 +31,7 @@ RUN cmake \
     --build cmake_build \
     -j "$(nproc)"
 
+EXPOSE 2379 2380
 WORKDIR /etcd-ydb/cmake_build
 ENTRYPOINT ["./etcd-ydb"]
 CMD ["-c", "/etcd-ydb/configs/static_config.yaml"]
