@@ -18,26 +18,21 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/* \
     && pip3 install conan==1.62.0
 
+WORKDIR /conan
+COPY ./conan ./
+RUN conan config install .
+
 # INFO [pavelbezpravel]:
 # We copy the existing third_party/userver instead of cloning the repository,
 # because in this case we can manually checkout to commits that are safe and reliable.
 # I hope userver will be added to the conan-center-index soon.
-
-RUN conan profile new --detect default \
-    && conan profile update settings.compiler.libcxx=libstdc++11 default \
-    && conan profile update settings.compiler=clang default \
-    && conan profile update settings.compiler.version=14 default \
-    && conan profile update settings.compiler.cppstd=20 default \
-    && conan profile update env.CC=clang-14 default \
-    && conan profile update env.CXX=clang++-14 default
 
 WORKDIR /userver-framework
 COPY third_party/userver ./userver
 RUN conan create \
     /userver-framework/userver \
     --build=missing \
-    -pr:b=default \
-    -s build_type=Release
+    -pr:b=default
 
 WORKDIR /etcd-ydb
 COPY ./ ./
