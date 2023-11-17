@@ -32,7 +32,7 @@ COPY third_party/userver ./userver
 RUN conan create \
     /userver-framework/userver \
     --build=missing \
-    -pr:b=default
+    -pr:b=etcd-ydb/default
 
 WORKDIR /etcd-ydb
 COPY ./ ./

@@ -17,6 +17,7 @@ conan_cmake_install(
     SETTINGS ${settings}
     ENV "CONAN_CMAKE_GENERATOR=${CMAKE_GENERATOR}"
     CONF "tools.cmake.cmaketoolchain:generator=${CMAKE_GENERATOR}"
+    PROFILE "etcd-ydb/default"
 )
 include(${CMAKE_BINARY_DIR}/conan_toolchain.cmake)
 
