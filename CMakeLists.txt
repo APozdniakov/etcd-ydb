@@ -4,13 +4,25 @@ project(etcd-ydb LANGUAGES CXX)
 set(BUILD_SHARED_LIBS OFF)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 message(STATUS "Using toolchain file: ${CMAKE_TOOLCHAIN_FILE}")
-include(cmake/userver.cmake)
 
-file(GLOB_RECURSE PROTOS ${CMAKE_CURRENT_SOURCE_DIR}/proto/*.proto) # TODO [pavelbezpravel]: bruh...
+include(cmake/conan.cmake)
+conan_cmake_autodetect(settings)
+conan_cmake_install(
+    PATH_OR_REFERENCE ${CMAKE_SOURCE_DIR}
+    INSTALL_FOLDER ${CMAKE_BINARY_DIR}
+    BUILD missing
+    SETTINGS ${settings}
+    ENV "CONAN_CMAKE_GENERATOR=${CMAKE_GENERATOR}"
+    CONF "tools.cmake.cmaketoolchain:generator=${CMAKE_GENERATOR}"
+)
+include(${CMAKE_BINARY_DIR}/conan_toolchain.cmake)
 
-include(GrpcTargets)
+find_package(userver 1.0.0 EXACT REQUIRED)
+
+file(GLOB_RECURSE PROTOS ${CMAKE_SOURCE_DIR}/proto/*.proto)
 add_grpc_library(etcd-api-proto PROTOS ${PROTOS})
 
 add_executable(${PROJECT_NAME}
