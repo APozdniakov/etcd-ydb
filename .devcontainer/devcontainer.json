@@ -1,0 +1,6 @@
+{
+  "name": "etcd-ydb-env",
+  "build": {
+    "dockerfile": "Dockerfile"
+  }
+}
