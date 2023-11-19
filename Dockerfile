@@ -1,8 +1,14 @@
 # syntax=docker/dockerfile:1
 
-FROM ghcr.io/userver-framework/ubuntu-userver-build-base:v2 AS builder
+FROM ubuntu:22.04 AS builder
+
+RUN apt-get update && DEBIAN_FRONTEND=nointeractive apt-get install -y \
+    tzdata \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN apt-get update && apt-get install -y \
+    ccache \
     clang-14 \
     cmake \
     git \
@@ -13,7 +19,12 @@ RUN apt-get update && apt-get install -y \
     ninja-build \
     pkg-config \
     python3 \
+    python3-dev \
+    python3-jinja2 \
     python3-pip \
+    python3-protobuf \
+    python3-virtualenv \
+    python3-voluptuous \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
     && pip3 install conan==1.62.0
@@ -32,7 +43,11 @@ COPY third_party/userver ./userver
 RUN conan create \
     /userver-framework/userver \
     --build=missing \
-    -pr:b=etcd-ydb/default
+    -pr=etcd-ydb/default \
+    -pr:b=etcd-ydb/default \
+    -pr:h=etcd-ydb/default \
+    && conan remove "*" -fs \
+    && rm -rf /userver-framework/userver
 
 WORKDIR /etcd-ydb
 COPY ./ ./

@@ -9,15 +9,15 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 message(STATUS "Using toolchain file: ${CMAKE_TOOLCHAIN_FILE}")
 
 include(cmake/conan.cmake)
-conan_cmake_autodetect(settings)
 conan_cmake_install(
     PATH_OR_REFERENCE ${CMAKE_SOURCE_DIR}
     INSTALL_FOLDER ${CMAKE_BINARY_DIR}
     BUILD missing
-    SETTINGS ${settings}
     ENV "CONAN_CMAKE_GENERATOR=${CMAKE_GENERATOR}"
     CONF "tools.cmake.cmaketoolchain:generator=${CMAKE_GENERATOR}"
     PROFILE "etcd-ydb/default"
+    PROFILE_BUILD "etcd-ydb/default"
+    PROFILE_HOST "etcd-ydb/default"
 )
 include(${CMAKE_BINARY_DIR}/conan_toolchain.cmake)
 
