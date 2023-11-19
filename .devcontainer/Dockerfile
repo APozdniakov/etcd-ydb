@@ -9,6 +9,7 @@ RUN apt-get update && DEBIAN_FRONTEND=nointeractive apt-get install -y \
 
 RUN apt-get update && apt-get install -y \
     ccache \
+    clangd-14 \
     clang-14 \
     cmake \
     curl \
@@ -73,3 +74,4 @@ RUN conan create \
     && conan remove "*" --builds --src --force \
     && rm -rf /userver-framework/userver
 WORKDIR /home/builder
+EXPOSE 2379 2380

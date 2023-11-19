@@ -6,3 +6,4 @@ Dockerfile
 .gitignore
 .gitmodules
 .idea/
+.vscode/
