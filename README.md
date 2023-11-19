@@ -26,7 +26,7 @@ docker run \
   -G Ninja \
   -DCMAKE_TOOLCHAIN_FILE=/workspaces/etcd-ydb/clang.toolchain \
   -S /workspaces/etcd-ydb \
-  -B /workspaces/etcd-ydbcmake_build
+  -B /workspaces/etcd-ydb/cmake_build
 
 docker run \
   --rm \
@@ -49,13 +49,18 @@ npm install -g @devcontainers/cli
 
 ```bash
 devcontainer up --workspace-folder .
+
 devcontainer exec --workspace-folder . \
   cmake \
   -DCMAKE_BUILD_TYPE=Release \
   -G Ninja \
   -DCMAKE_TOOLCHAIN_FILE=/workspaces/etcd-ydb/clang.toolchain \
   -S /workspaces/etcd-ydb \
-  -B /workspaces/etcd-ydbcmake_build
+  -B /workspaces/etcd-ydb/cmake_build
+
+devcontainer exec --workspace-folder . \
+  cmake \
+  --build /workspaces/etcd-ydb/cmake_build
 ```
 
 ## Run
