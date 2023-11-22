@@ -74,4 +74,5 @@ RUN conan create \
     && conan remove "*" --builds --src --force \
     && rm -rf /userver-framework/userver
 WORKDIR /home/builder
-EXPOSE 2379 2380
+EXPOSE 22379 22380
+CMD ["tail", "-f", "/dev/null"]

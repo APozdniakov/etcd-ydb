@@ -35,5 +35,18 @@ services:
     volumes:
       - ./ydb_certs:/ydb_certs
       - ./ydb_data:/ydb_data
+  etcd-ydb-dev:
+    build:
+      context: ../
+      dockerfile: ./.devcontainer/Dockerfile
+    container_name: etcd-ydb-dev
+    depends_on:
+      - etcd
+      - ydb
+    ports:
+      - "22379:22379"
+      - "22380:22380"
+    volumes:
+      - ../:/workspaces/etcd-ydb
 volumes:
   etcd-data:
