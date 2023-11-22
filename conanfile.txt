@@ -1,6 +1,6 @@
 [requires]
-grpc/1.54.3
+userver/1.0.0
 
 [generators]
-cmake_find_package
-cmake_paths
+CMakeDeps
+CMakeToolchain

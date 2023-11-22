@@ -1,0 +1,26 @@
+{
+  "name": "etcd-ydb-env",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": "../"
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "llvm-vs-code-extensions.vscode-clangd",
+        "ms-vscode.cmake-tools",
+        "ms-vscode.cpptools",
+        "ms-vscode.cpptools-extension-pack",
+        "ms-python.python"
+      ]
+    }
+  },
+  "forwardPorts": [
+    2379,
+    2380
+  ],
+  "remoteUser": "builder",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/etcd-ydb,type=bind,consistency=default",
+  "workspaceFolder": "/workspaces/etcd-ydb",
+  "shutdownAction": "stopContainer"
+}

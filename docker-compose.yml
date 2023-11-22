@@ -1,0 +1,17 @@
+version: "3.3"
+services:
+  etcd-ydb:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    command: ["./etcd-ydb", "-c", "/etc/etcd-ydb/configs/static_config.yaml"]
+    configs:
+      - source: etcd-ydb-static-config
+        target: /etc/etcd-ydb/configs/static_config.yaml
+    container_name: etcd-ydb-local
+    ports:
+      - "2379:2379"
+      - "2380:2380"
+configs:
+  etcd-ydb-static-config:
+    file: ./configs/static_config.yaml

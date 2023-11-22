@@ -27,3 +27,9 @@ developed for Protocol Buffers for Go with Gadgets (https://github.com/gogo/prot
 licensed under the BSD-3-Clause license. The licensing terms
 for Protocol Buffers for Go with Gadgets code can be found at:
 https://github.com/gogo/protobuf/blob/master/LICENSE
+
+This product includes software components originally
+developed for userver (https://github.com/userver-framework/userver),
+licensed under the Apache 2.0 license. The licensing terms
+for userver code can be found at:
+https://github.com/userver-framework/userver/blob/develop/LICENSE

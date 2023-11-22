@@ -1,57 +1,72 @@
 # etcd-ydb
 
-## Build Requirements
+Clone with `--recurse-submodules` option or run `git submodule update --init`
 
-- cmake 3.22+
-- clang-14
-- lld-14
-- python3.8
-- pip3
-- ninja 1.10+
-- conan 1.59.0
-- docker (optional)
+## Requirements
 
-## How to Build
+- docker 24.0.7
+- docker compose 2.21.0
+- devcontainers/cli (optional)
 
-### local
+## Build
 
+### Docker
+
+You can build a project manually with `docker`. You have to build an image and run a containers with `cmake` commands:
 ```bash
 mkdir -p cmake_build
-cmake \
+docker build -t etcd-ydb/dev -f .devcontainer/Dockerfile .
+
+docker run \
+  --rm \
+  -it \
+  -u 1000:1000 \
+  -v "$(pwd)":/workspaces/etcd-ydb \
+  etcd-ydb/dev \
+  cmake \
   -DCMAKE_BUILD_TYPE=Release \
   -G Ninja \
-  -DCMAKE_TOOLCHAIN_FILE=clang.toolchain \
-  -S . \
-  -B cmake_build
+  -DCMAKE_TOOLCHAIN_FILE=/workspaces/etcd-ydb/clang.toolchain \
+  -S /workspaces/etcd-ydb \
+  -B /workspaces/etcd-ydb/cmake_build
 
-cmake --build cmake_build
+docker run \
+  --rm \
+  -it \
+  -u 1000:1000 \
+  -v "$(pwd)":/workspaces/etcd-ydb \
+  etcd-ydb/dev \
+  cmake \
+  --build /workspaces/etcd-ydb/cmake_build
 ```
 
-### dockerized
+### Dev Container Cli
+
+Also, you can build a project with [devcontainers](https://containers.dev/) in an easy and convenient way.  
+Your IDE (e.g. Clion) or code editor (e.g. VS Code) can run and attach to devcontainer.  
+Install devcontainers/cli with npm:
+```bash
+npm install -g @devcontainers/cli
+```
 
 ```bash
-mkdir -p cmake_build
-docker build -t etcd-ydb:dev -f Dockerfile .
+devcontainer up --workspace-folder .
 
-docker run \
-  --rm \
-  -it \
-  -u 1000:1000 \
-  -v $(pwd):/tmp/etcd-ydb \
-  -v $(conan config home):/home/builder/.conan \
-  etcd-ydb:dev \
-  cmake -DCMAKE_BUILD_TYPE=Release \
+devcontainer exec --workspace-folder . \
+  cmake \
+  -DCMAKE_BUILD_TYPE=Release \
   -G Ninja \
-  -DCMAKE_TOOLCHAIN_FILE=/tmp/etcd-ydb/clang.toolchain \
-  -S /tmp/etcd-ydb \
-  -B /tmp/etcd-ydb/cmake_build
+  -DCMAKE_TOOLCHAIN_FILE=/workspaces/etcd-ydb/clang.toolchain \
+  -S /workspaces/etcd-ydb \
+  -B /workspaces/etcd-ydb/cmake_build
 
-docker run \
-  --rm \
-  -it \
-  -u 1000:1000 \
-  -v $(pwd):/tmp/etcd-ydb \
-  -v $(conan config home):/home/builder/.conan \
-  etcd-ydb:dev \
-  cmake --build /tmp/etcd-ydb/cmake_build
+devcontainer exec --workspace-folder . \
+  cmake \
+  --build /workspaces/etcd-ydb/cmake_build
+```
+
+## Run
+
+```bash
+docker compose up --build
 ```
