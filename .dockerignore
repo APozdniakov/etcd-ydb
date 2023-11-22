@@ -1,3 +1,4 @@
+build/
 cmake_build/
 .devcontainer/
 docker-compose.yml
