@@ -17,7 +17,7 @@ components_manager:
           level: debug
           overflow_behavior: discard
     grpc-server:
-      port: 2379
+      port: 22379
       completion-queue-count: 3
     kv-service:
       task-processor: main-task-processor
