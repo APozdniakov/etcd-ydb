@@ -24,7 +24,7 @@ services:
       GRPC_TLS_PORT: 2135
       GRPC_PORT: 2136
       MON_PORT: 8765
-      YDB_USE_IN_MEMORY_PDISKS: true
+      YDB_USE_IN_MEMORY_PDISKS: "true"
     container_name: ydb
     hostname: localhost
     image: cr.yandex/yc/yandex-docker-local-ydb:latest
