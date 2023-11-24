@@ -10,8 +10,8 @@ services:
         target: /etc/etcd-ydb/configs/static_config.yaml
     container_name: etcd-ydb-local
     ports:
-      - "2379:2379"
-      - "2380:2380"
+      - "22379:22379"
+      - "22380:22380"
 configs:
   etcd-ydb-static-config:
     file: ./configs/static_config.yaml

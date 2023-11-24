@@ -1,0 +1,52 @@
+version: "3.3"
+services:
+  etcd:
+    command:
+      - /usr/local/bin/etcd
+      - --data-dir=/etcd-data
+      - --name=node1
+      - --initial-advertise-peer-urls=http://127.0.0.1:2380
+      - --listen-peer-urls=http://0.0.0.0:2380
+      - --advertise-client-urls=http://127.0.0.1:2379
+      - --listen-client-urls=http://0.0.0.0:2379
+      - --initial-cluster=node1=http://127.0.0.1:2380
+    container_name: etcd
+    hostname: etcd-local
+    image: gcr.io/etcd-development/etcd:v3.5.10
+    ports:
+      - "2379:2379"
+      - "2380:2380"
+    volumes:
+      - etcd-data:/etcd-data
+  ydb:
+    environment:
+      YDB_DEFAULT_LOG_LEVEL: NOTICE
+      GRPC_TLS_PORT: 2135
+      GRPC_PORT: 2136
+      MON_PORT: 8765
+      YDB_USE_IN_MEMORY_PDISKS: "true"
+    container_name: ydb
+    hostname: localhost
+    image: cr.yandex/yc/yandex-docker-local-ydb:latest
+    ports:
+      - "2135:2135"
+      - "8765:8765"
+      - "2136:2136"
+    volumes:
+      - ./ydb_certs:/ydb_certs
+      - ./ydb_data:/ydb_data
+  etcd-ydb-dev:
+    build:
+      context: ../
+      dockerfile: ./.devcontainer/Dockerfile
+    container_name: etcd-ydb-dev
+    depends_on:
+      - etcd
+      - ydb
+    ports:
+      - "22379:22379"
+      - "22380:22380"
+    volumes:
+      - ../:/workspaces/etcd-ydb
+volumes:
+  etcd-data:

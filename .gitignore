@@ -1,3 +1,6 @@
+build/
 cmake_build/
 .idea/
 .vscode/
+*/ydb_certs/
+*/ydb_data/

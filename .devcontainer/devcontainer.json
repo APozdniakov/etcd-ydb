@@ -1,9 +1,13 @@
 {
   "name": "etcd-ydb-env",
-  "build": {
-    "dockerfile": "Dockerfile",
-    "context": "../"
-  },
+  "dockerComposeFile": [
+    "docker-compose.yml"
+  ],
+  "service": "etcd-ydb-dev",
+  "runServices": [
+    "etcd",
+    "ydb"
+  ],
   "customizations": {
     "vscode": {
       "extensions": [
@@ -16,11 +20,10 @@
     }
   },
   "forwardPorts": [
-    2379,
-    2380
+    22379,
+    22380
   ],
   "remoteUser": "builder",
-  "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/etcd-ydb,type=bind,consistency=default",
   "workspaceFolder": "/workspaces/etcd-ydb",
-  "shutdownAction": "stopContainer"
+  "shutdownAction": "stopCompose"
 }
