@@ -2,6 +2,22 @@
 
 Clone with `--recurse-submodules` option or run `git submodule update --init`
 
+## Prerequisites
+
+Append this to `/etc/docker/daemon.json`:
+```
+{
+    "insecure-registries": [
+        "kel.osll.ru:8083"
+    ]
+}
+```
+
+Run:
+```bash
+sudo systemctl restart docker.service
+```
+
 ## Requirements
 
 - docker 24.0.7
@@ -14,15 +30,15 @@ Clone with `--recurse-submodules` option or run `git submodule update --init`
 
 You can build a project manually with `docker`. You have to build an image and run a containers with `cmake` commands:
 ```bash
+docker pull kel.osll.ru:8083/docker/etcd-ydb-build-base:0.1.0
 mkdir -p cmake_build
-docker build -t etcd-ydb/dev -f .devcontainer/Dockerfile .
 
 docker run \
   --rm \
   -it \
   -u 1000:1000 \
   -v "$(pwd)":/workspaces/etcd-ydb \
-  etcd-ydb/dev \
+  kel.osll.ru:8083/docker/etcd-ydb-build-base:0.1.0 \
   cmake \
   -DCMAKE_BUILD_TYPE=Release \
   -G Ninja \
@@ -35,7 +51,7 @@ docker run \
   -it \
   -u 1000:1000 \
   -v "$(pwd)":/workspaces/etcd-ydb \
-  etcd-ydb/dev \
+  kel.osll.ru:8083/docker/etcd-ydb-build-base:0.1.0 \
   cmake \
   --build /workspaces/etcd-ydb/cmake_build
 ```
