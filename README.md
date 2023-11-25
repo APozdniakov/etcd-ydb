@@ -1,8 +1,12 @@
 # etcd-ydb
 
+## Prerequisites
+
+### git clone
+
 Clone with `--recurse-submodules` option or run `git submodule update --init`
 
-## Prerequisites
+### docker
 
 Append this to `/etc/docker/daemon.json`:
 ```
@@ -16,6 +20,12 @@ Append this to `/etc/docker/daemon.json`:
 Run:
 ```bash
 sudo systemctl restart docker.service
+```
+
+### devcontainers/cli
+
+```bash
+npm install -g @devcontainers/cli
 ```
 
 ## Requirements
@@ -60,11 +70,8 @@ docker run \
 
 Also, you can build a project with [devcontainers](https://containers.dev/) in an easy and convenient way.  
 Your IDE (e.g. Clion) or code editor (e.g. VS Code) can run and attach to devcontainer.  
-Install devcontainers/cli with npm:
-```bash
-npm install -g @devcontainers/cli
-```
 
+You can use devcontainers/cli to set up environment and build the project manually via bash:
 ```bash
 devcontainer up --workspace-folder .
 
@@ -83,6 +90,12 @@ devcontainer exec --workspace-folder . \
 
 ## Run
 
+You can run existing binary:
+```bash
+cmake_buid/etcd-ydb -c configs/static_config.yaml
+```
+
+Also you can run dockerized application via docker compose:
 ```bash
 docker compose up --build
 ```
