@@ -24,6 +24,7 @@
     22380
   ],
   "remoteUser": "builder",
+  "updateRemoteUserUID": false,
   "workspaceFolder": "/workspaces/etcd-ydb",
   "shutdownAction": "stopCompose"
 }
