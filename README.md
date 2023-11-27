@@ -48,22 +48,21 @@ docker run \
   -it \
   -u 1000:1000 \
   -v "$(pwd)":/workspaces/etcd-ydb \
+  -w "/workspaces/etcd-ydb" \
   kel.osll.ru:8083/docker/etcd-ydb-build-base:0.1.0 \
   cmake \
-  -DCMAKE_BUILD_TYPE=Release \
-  -G Ninja \
-  -DCMAKE_TOOLCHAIN_FILE=/workspaces/etcd-ydb/clang.toolchain \
-  -S /workspaces/etcd-ydb \
-  -B /workspaces/etcd-ydb/cmake_build
+  --preset=release
 
 docker run \
   --rm \
   -it \
   -u 1000:1000 \
   -v "$(pwd)":/workspaces/etcd-ydb \
+  -w "/workspaces/etcd-ydb" \
   kel.osll.ru:8083/docker/etcd-ydb-build-base:0.1.0 \
   cmake \
-  --build /workspaces/etcd-ydb/cmake_build
+  --build \
+  --preset=release
 ```
 
 ### Dev Container Cli
@@ -77,22 +76,19 @@ devcontainer up --workspace-folder .
 
 devcontainer exec --workspace-folder . \
   cmake \
-  -DCMAKE_BUILD_TYPE=Release \
-  -G Ninja \
-  -DCMAKE_TOOLCHAIN_FILE=/workspaces/etcd-ydb/clang.toolchain \
-  -S /workspaces/etcd-ydb \
-  -B /workspaces/etcd-ydb/cmake_build
+  --preset=release
 
 devcontainer exec --workspace-folder . \
   cmake \
-  --build /workspaces/etcd-ydb/cmake_build
+  --build \
+  --preset=release
 ```
 
 ## Run
 
 You can run existing binary:
 ```bash
-cmake_buid/etcd-ydb -c configs/static_config.yaml
+cmake-build-release/etcd-ydb -c configs/static_config.yaml
 ```
 
 Also you can run dockerized application via docker compose:
