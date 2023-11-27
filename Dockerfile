@@ -6,18 +6,14 @@ WORKDIR /etcd-ydb
 COPY ./ ./
 
 RUN cmake \
-    -DCMAKE_BUILD_TYPE=Release \
-    -G Ninja \
-    -DCMAKE_TOOLCHAIN_FILE=clang.toolchain \
-    -S . \
-    -B cmake_build \
+    --preset=release \
     && cmake \
-    --build cmake_build \
-    -j "$(nproc)"
+    --build \
+    --preset=release
 
 FROM ubuntu:22.04 AS runner
 WORKDIR /etcd-ydb
-COPY --from=builder /etcd-ydb/cmake_build/etcd-ydb ./
+COPY --from=builder /etcd-ydb/cmake-build-release/etcd-ydb ./
 COPY --from=builder /etcd-ydb/configs ./configs/
 EXPOSE 22379 22380
 ENTRYPOINT ["./etcd-ydb"]
