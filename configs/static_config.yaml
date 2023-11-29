@@ -21,7 +21,6 @@ components_manager:
       completion-queue-count: 3
     kv-service:
       task-processor: main-task-processor
-      greeting-prefix: KV
       middlewares: []
     server:
       listener:
