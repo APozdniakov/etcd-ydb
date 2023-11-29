@@ -41,7 +41,6 @@ npm install -g @devcontainers/cli
 You can build a project manually with `docker`. You have to build an image and run a containers with `cmake` commands:
 ```bash
 docker pull kel.osll.ru:8083/docker/etcd-ydb-build-base:0.1.0
-mkdir -p cmake_build
 
 docker run \
   --rm \
