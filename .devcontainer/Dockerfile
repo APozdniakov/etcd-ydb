@@ -63,4 +63,3 @@ RUN --mount=type=bind,source=./third_party/userver,target=./userver \
 
 WORKDIR /home/builder
 EXPOSE 22379 22380
-CMD ["tail", "-f", "/dev/null"]
