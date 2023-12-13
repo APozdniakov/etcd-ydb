@@ -33,6 +33,10 @@ RUN apt-get update && DEBIAN_FRONTEND=nointeractive apt-get install -y --no-inst
     && rm -rf /var/lib/apt/lists/* \
     && pip3 install --no-cache-dir conan==1.62.0
 
+WORKDIR /grpc_health_probe
+RUN curl -L https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/v0.4.23/grpc_health_probe-linux-amd64 -o grpc_health_probe \
+    && install -o root -g root -m 0755 grpc_health_probe /usr/local/bin/grpc_health_probe
+
 WORKDIR /ccache
 RUN export V=4.8.1 \
     && curl -Lo ccache-${V}-linux-x86_64.tar.xz https://github.com/ccache/ccache/releases/download/v${V}/ccache-${V}-linux-x86_64.tar.xz \
