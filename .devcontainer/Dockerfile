@@ -73,6 +73,31 @@ WORKDIR /conan
 RUN --mount=type=bind,source=./conan,target=./ \
     conan config install .
 
+WORKDIR /ydb
+# TODO [pavelbezpravel]: try to avoid using sudo.
+RUN --mount=type=bind,source=./third_party/ydb,rw,target=./ \
+    sudo chown -R $USERNAME . \
+    && conan install \
+    . \
+    --build=missing \
+    --no-imports \
+    -pr=etcd-ydb/default \
+    -pr:b=etcd-ydb/default \
+    -pr:h=etcd-ydb/default \
+    -s build_type=Release \
+    -s:b build_type=Release \
+    -s:h build_type=Release \
+    && conan install \
+    . \
+    --build=missing \
+    --no-imports \
+    -pr=etcd-ydb/default \
+    -pr:b=etcd-ydb/default \
+    -pr:h=etcd-ydb/default \
+    -s build_type=Debug \
+    -s:b build_type=Debug \
+    -s:h build_type=Debug
+
 WORKDIR /grpc
 # TODO [pavelbezpravel]: try to avoid using sudo.
 RUN --mount=type=bind,source=./third_party/conan-center-index/recipes/grpc,rw,target=./ \
