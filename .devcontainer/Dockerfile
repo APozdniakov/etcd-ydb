@@ -3,7 +3,6 @@
 FROM ubuntu:22.04 AS builder
 
 RUN apt-get update && DEBIAN_FRONTEND=nointeractive apt-get install -y --no-install-recommends \
-    ccache \
     clangd-14 \
     clang-14 \
     cmake \
@@ -28,9 +27,18 @@ RUN apt-get update && DEBIAN_FRONTEND=nointeractive apt-get install -y --no-inst
     python3-virtualenv \
     python3-voluptuous \
     tzdata \
+    xz-utils \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
     && pip3 install --no-cache-dir conan==1.62.0
+
+WORKDIR /ccache
+RUN export V=4.8.1 \
+    && curl -Lo ccache-${V}-linux-x86_64.tar.xz https://github.com/ccache/ccache/releases/download/v${V}/ccache-${V}-linux-x86_64.tar.xz \
+    && tar -Jxvf ccache-${V}-linux-x86_64.tar.xz -C ./ --strip-components=1 --no-same-owner ccache-${V}-linux-x86_64/ccache \
+    && rm -rf ccache-${V}-linux-x86_64.tar.xz \
+    && unset V \
+    && install -o root -g root -m 0755 ./ccache /usr/local/bin/ccache
 
 WORKDIR /etcdctl
 RUN curl -L https://github.com/etcd-io/etcd/releases/download/v3.5.10/etcd-v3.5.10-linux-amd64.tar.gz -o /etcdctl/etcd-v3.5.10-linux-amd64.tar.gz \
