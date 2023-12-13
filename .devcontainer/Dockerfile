@@ -3,6 +3,7 @@
 FROM ubuntu:22.04 AS builder
 
 RUN apt-get update && DEBIAN_FRONTEND=nointeractive apt-get install -y --no-install-recommends \
+    antlr3 \
     clangd-14 \
     clang-14 \
     cmake \
@@ -12,6 +13,9 @@ RUN apt-get update && DEBIAN_FRONTEND=nointeractive apt-get install -y --no-inst
     git \
     g++ \
     iwyu \
+    libaio1 \
+    libaio-dev \
+    libidn11-dev \
     lld-14 \
     lldb-14 \
     llvm-14 \
@@ -31,7 +35,7 @@ RUN apt-get update && DEBIAN_FRONTEND=nointeractive apt-get install -y --no-inst
     xz-utils \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
-    && pip3 install --no-cache-dir conan==1.62.0
+    && pip3 install --no-cache-dir conan==1.62.0 grpcio-tools==1.57.0
 
 WORKDIR /grpc_health_probe
 RUN curl -L https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/v0.4.23/grpc_health_probe-linux-amd64 -o grpc_health_probe \
