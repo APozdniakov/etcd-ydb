@@ -36,7 +36,7 @@ services:
       - ./ydb_certs:/ydb_certs
       - ./ydb_data:/ydb_data
   etcd-ydb-dev:
-    image: kel.osll.ru:8083/docker/etcd-ydb-build-base:0.1.0
+    image: kel.osll.ru:8083/docker/etcd-ydb-build-base:0.2.0
     container_name: etcd-ydb-dev
     command: tail -f /dev/null
     depends_on:
