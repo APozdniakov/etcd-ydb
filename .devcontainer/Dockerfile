@@ -22,6 +22,7 @@ RUN apt-get update && DEBIAN_FRONTEND=nointeractive apt-get install -y --no-inst
     make \
     m4 \
     ninja-build \
+    patch \
     pkg-config \
     python3 \
     python3-dev \
@@ -76,7 +77,8 @@ WORKDIR /grpc
 # TODO [pavelbezpravel]: try to avoid using sudo.
 RUN --mount=type=bind,source=./third_party/conan-center-index/recipes/grpc,rw,target=./ \
     --mount=type=bind,source=./patches/third_party/conan-center-index/recipes/grpc/all/,rw,target=./patches \
-    sudo patch ./all/conanfile.py ./patches/conanfile.py.patch \
+    sudo chown -R $USERNAME . \
+    && patch ./all/conanfile.py ./patches/conanfile.py.patch \
     && conan create \
     ./all 1.54.2@ \
     --test-folder=None \
@@ -107,7 +109,8 @@ WORKDIR /userver-framework
 # TODO [pavelbezpravel]: try to avoid using sudo.
 RUN --mount=type=bind,source=./third_party/userver,rw,target=./userver \
     --mount=type=bind,source=./patches/third_party/userver/,rw,target=./patches \
-    sudo patch ./userver/conanfile.py ./patches/conanfile.py.patch \
+    sudo chown -R $USERNAME . \
+    && patch ./userver/conanfile.py ./patches/conanfile.py.patch \
     && conan create \
     ./userver \
     --test-folder=None \
