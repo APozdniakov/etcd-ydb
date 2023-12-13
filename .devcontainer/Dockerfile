@@ -26,6 +26,7 @@ RUN apt-get update && DEBIAN_FRONTEND=nointeractive apt-get install -y --no-inst
     python3-protobuf \
     python3-virtualenv \
     python3-voluptuous \
+    sudo \
     tzdata \
     xz-utils \
     && apt-get clean \
@@ -46,9 +47,18 @@ RUN curl -L https://github.com/etcd-io/etcd/releases/download/v3.5.10/etcd-v3.5.
     && rm -f /etcdctl/etcd-v3.5.10-linux-amd64.tar.gz \
     && install -o root -g root -m 0755 etcdctl /usr/local/bin/etcdctl
 
-RUN groupadd builder \
-    && useradd -m -s /bin/bash -g builder builder
-USER builder:builder
+# https://code.visualstudio.com/remote/advancedcontainers/add-nonroot-user#_creating-a-nonroot-user
+
+ARG USERNAME=builder
+ARG USER_UID=1000
+ARG USER_GID=$USER_UID
+
+RUN groupadd --gid $USER_GID $USERNAME \
+    && useradd --uid $USER_UID --gid $USER_GID -m -s /bin/bash $USERNAME \
+    && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME \
+    && chmod 0440 /etc/sudoers.d/$USERNAME
+
+USER $USERNAME
 
 WORKDIR /conan
 RUN --mount=type=bind,source=./conan,target=./ \
@@ -69,5 +79,5 @@ RUN --mount=type=bind,source=./third_party/userver,target=./userver \
     -pr:h=etcd-ydb/default \
     && conan remove "*" --builds --src --force
 
-WORKDIR /home/builder
+WORKDIR /home/${USERNAME}
 EXPOSE 22379 22380
