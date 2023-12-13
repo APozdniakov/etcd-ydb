@@ -18,6 +18,9 @@ conan_cmake_install(
     PROFILE "etcd-ydb/default"
     PROFILE_BUILD "etcd-ydb/default"
     PROFILE_HOST "etcd-ydb/default"
+    SETTINGS "build_type=${CMAKE_BUILD_TYPE}"
+    SETTINGS_BUILD "build_type=${CMAKE_BUILD_TYPE}"
+    SETTINGS_HOST "build_type=${CMAKE_BUILD_TYPE}"
 )
 include(${CMAKE_BINARY_DIR}/conan_toolchain.cmake)
 
