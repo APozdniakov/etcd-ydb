@@ -1,9 +1,9 @@
 {
-  "name": "etcd-ydb-env",
+  "name": "etcd-ydb-devcontainer",
   "dockerComposeFile": [
     "docker-compose.yml"
   ],
-  "service": "etcd-ydb-dev",
+  "service": "etcd-ydb",
   "runServices": [
     "etcd",
     "ydb"
