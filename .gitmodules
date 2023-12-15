@@ -1,3 +1,6 @@
 [submodule "third_party/userver"]
 	path = third_party/userver
 	url = https://github.com/userver-framework/userver.git
+[submodule "third_party/ydb"]
+	path = third_party/ydb
+	url = https://github.com/ydb-platform/ydb.git

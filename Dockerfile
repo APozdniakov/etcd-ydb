@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM kel.osll.ru:8083/docker/etcd-ydb-build-base:0.1.0 AS builder
+FROM kel.osll.ru:8083/docker/etcd-ydb-build-base:0.2.0 AS builder
 
 WORKDIR /etcd-ydb
 COPY ./ ./

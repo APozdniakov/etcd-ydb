@@ -19,9 +19,9 @@ service Lock {
   // lock ownership. The lock is held until Unlock is called on the key or the
   // lease associate with the owner expires.
   rpc Lock(LockRequest) returns (LockResponse) {
-      option (google.api.http) = {
-        post: "/v3/lock/lock"
-        body: "*"
+    option (google.api.http) = {
+      post: "/v3/lock/lock"
+      body: "*"
     };
   }
 
@@ -29,9 +29,9 @@ service Lock {
   // next Lock caller waiting for the lock will then be woken up and given
   // ownership of the lock.
   rpc Unlock(UnlockRequest) returns (UnlockResponse) {
-      option (google.api.http) = {
-        post: "/v3/lock/unlock"
-        body: "*"
+    option (google.api.http) = {
+      post: "/v3/lock/unlock"
+      body: "*"
     };
   }
 }

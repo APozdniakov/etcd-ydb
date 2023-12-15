@@ -1,5 +1,7 @@
 build/
 cmake_build/
+cmake-build-*
+CMakeUserPresets.json
 .idea/
 .vscode/
 */ydb_certs/
