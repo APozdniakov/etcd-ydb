@@ -1,0 +1,32 @@
+
+Summary:
+  Total:	24.0482 secs.
+  Slowest:	0.5377 secs.
+  Fastest:	0.0005 secs.
+  Average:	0.0216 secs.
+  Stddev:	0.0164 secs.
+  Requests/sec:	41583.2402
+
+Response time histogram:
+  0.0005 [1]	|
+  0.0542 [979914]	|∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎
+  0.1079 [17366]	|
+  0.1616 [1383]	|
+  0.2153 [296]	|
+  0.2691 [174]	|
+  0.3228 [285]	|
+  0.3765 [150]	|
+  0.4302 [88]	|
+  0.4840 [330]	|
+  0.5377 [13]	|
+
+Latency distribution:
+  10% in 0.0100 secs.
+  25% in 0.0138 secs.
+  50% in 0.0190 secs.
+  75% in 0.0258 secs.
+  90% in 0.0343 secs.
+  95% in 0.0416 secs.
+  99% in 0.0661 secs.
+  99.9% in 0.2526 secs.
+
