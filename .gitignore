@@ -4,5 +4,6 @@ cmake-build-*
 CMakeUserPresets.json
 .idea/
 .vscode/
-*/ydb_certs/
-*/ydb_data/
+**/ydb_certs/
+**/ydb_data/
+**/__pycache__/
