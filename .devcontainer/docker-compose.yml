@@ -10,6 +10,7 @@ services:
       - --advertise-client-urls=http://127.0.0.1:2379
       - --listen-client-urls=http://0.0.0.0:2379
       - --initial-cluster=node1=http://127.0.0.1:2380
+      - --quota-backend-bytes=21474836480
     container_name: etcd
     hostname: etcd-local
     image: gcr.io/etcd-development/etcd:v3.5.10
@@ -17,7 +18,7 @@ services:
       - "2379:2379"
       - "2380:2380"
     volumes:
-      - etcd-data:/etcd-data
+      - ./etcd-data:/etcd-data
   ydb:
     environment:
       YDB_DEFAULT_LOG_LEVEL: NOTICE
@@ -36,8 +37,7 @@ services:
       - ./ydb_certs:/ydb_certs
       - ./ydb_data:/ydb_data
   etcd-ydb:
-    image: kel.osll.ru:8083/docker/etcd-ydb-build-base:0.2.0
-    container_name: etcd-ydb-devcontainer
+    image: golang:1.21
     command: tail -f /dev/null
     depends_on:
       - etcd
@@ -47,5 +47,3 @@ services:
       - "22380:22380"
     volumes:
       - ../:/workspaces/etcd-ydb
-volumes:
-  etcd-data:
