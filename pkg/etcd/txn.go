@@ -14,20 +14,23 @@ func (TxnRequest) Request() {}
 
 func serializeRequestOp(request Request) *etcdserverpb.RequestOp {
 	switch r := request.(type) {
-	case DeleteRequest:
+	case *DeleteRequest:
 		return &etcdserverpb.RequestOp{Request: &etcdserverpb.RequestOp_RequestDeleteRange{RequestDeleteRange: serializeDeleteRequest(r)}}
-	case PutRequest:
+	case *PutRequest:
 		return &etcdserverpb.RequestOp{Request: &etcdserverpb.RequestOp_RequestPut{RequestPut: serializePutRequest(r)}}
-	case RangeRequest:
+	case *RangeRequest:
 		return &etcdserverpb.RequestOp{Request: &etcdserverpb.RequestOp_RequestRange{RequestRange: serializeRangeRequest(r)}}
-	case TxnRequest:
+	case *TxnRequest:
 		return &etcdserverpb.RequestOp{Request: &etcdserverpb.RequestOp_RequestTxn{RequestTxn: serializeTxnRequest(r)}}
 	default:
 		panic("unknown request type")
 	}
 }
 
-func serializeTxnRequest(request TxnRequest) *etcdserverpb.TxnRequest {
+func serializeTxnRequest(request *TxnRequest) *etcdserverpb.TxnRequest {
+	if request == nil {
+		return nil
+	}
 	result := &etcdserverpb.TxnRequest{
 		Compare: make([]*etcdserverpb.Compare, 0, len(request.Compare)),
 		Success: make([]*etcdserverpb.RequestOp, 0, len(request.Success)),
@@ -53,6 +56,18 @@ type TxnResponse struct {
 
 func (TxnResponse) Response() {}
 
+func (response TxnResponse) GetRevision() int64 {
+	return response.Revision
+}
+
+func (response TxnResponse) IsWrite() bool {
+	result := false
+	for _, response := range response.Responses {
+		result = result || response.IsWrite()
+	}
+	return result
+}
+
 func deserializeRequestOp(response *etcdserverpb.ResponseOp) Response {
 	if deleteResponse := response.GetResponseDeleteRange(); deleteResponse != nil {
 		return deserializeDeleteResponse(deleteResponse)
@@ -72,7 +87,7 @@ func deserializeTxnResponse(response *etcdserverpb.TxnResponse) *TxnResponse {
 		return nil
 	}
 	result := &TxnResponse{
-		Revision: response.Header.Revision,
+		Revision:  response.Header.Revision,
 		Succeeded: response.Succeeded,
 		Responses: make([]Response, 0, len(response.Responses)),
 	}
@@ -82,7 +97,7 @@ func deserializeTxnResponse(response *etcdserverpb.TxnResponse) *TxnResponse {
 	return result
 }
 
-func Txn(client *Client, request TxnRequest) (*TxnResponse, error) {
+func Txn(client *Client, request *TxnRequest) (*TxnResponse, error) {
 	response, err := client.Txn(serializeTxnRequest(request))
 	if err != nil {
 		return nil, err

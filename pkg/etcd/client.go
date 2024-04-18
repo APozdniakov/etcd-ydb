@@ -2,8 +2,6 @@ package etcd
 
 import (
 	"context"
-	"fmt"
-	"math"
 
 	"go.etcd.io/etcd/api/v3/etcdserverpb"
 	"google.golang.org/grpc"
@@ -16,14 +14,15 @@ type Request interface {
 
 type Response interface {
 	Response()
+	GetRevision() int64
+	IsWrite() bool
 }
 
 var defaultCallOpts = []grpc.CallOption{
 	grpc.WaitForReady(true),
 	grpc.MaxCallSendMsgSize(2 * 1024 * 1024),
-	grpc.MaxCallRecvMsgSize(math.MaxInt32),
+	grpc.MaxCallRecvMsgSize(4 * 1024 * 1024),
 }
-
 
 type Client struct {
 	endpoint string
@@ -69,13 +68,18 @@ func (client *Client) Compact(request *etcdserverpb.CompactionRequest) (*etcdser
 }
 
 func Do(client *Client, request Request) (Response, error) {
-	fmt.Printf(" request = %#v\n", request)
 	switch r := request.(type) {
-	case CompactRequest: return Compact(client, r)
-	case DeleteRequest: return Delete(client, r)
-	case PutRequest: return Put(client, r)
-	case RangeRequest: return Range(client, r)
-	case TxnRequest: return Txn(client, r)
-	default: panic("unknown request type")
+	case *CompactRequest:
+		return Compact(client, r)
+	case *DeleteRequest:
+		return Delete(client, r)
+	case *PutRequest:
+		return Put(client, r)
+	case *RangeRequest:
+		return Range(client, r)
+	case *TxnRequest:
+		return Txn(client, r)
+	default:
+		panic("unknown request type")
 	}
 }

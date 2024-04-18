@@ -1,18 +1,22 @@
 package etcd_test
 
 import (
-	"flag"
 	"os"
 	"testing"
+
+	"github.com/ydb-platform/etcd-ydb/pkg/etcd"
 )
 
-var (
-	endpoint string
-)
+const endpoint = "etcd:2379"
+
+var client *etcd.Client
 
 func Init() {
-	flag.StringVar(&endpoint, "endpoint", "etcd:2379", "gRPC endpoint") // TODO: fix
-	flag.Parse()
+	var err error
+	client, err = etcd.NewClient(endpoint)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func TestMain(m *testing.M) {

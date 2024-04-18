@@ -6,15 +6,16 @@ import (
 
 type CompactRequest struct {
 	Revision int64
-	Physical bool
 }
 
 func (CompactRequest) Request() {}
 
-func serializeCompactRequest(request CompactRequest) *etcdserverpb.CompactionRequest {
+func serializeCompactRequest(request *CompactRequest) *etcdserverpb.CompactionRequest {
+	if request == nil {
+		return nil
+	}
 	return &etcdserverpb.CompactionRequest{
 		Revision: request.Revision,
-		Physical: request.Physical,
 	}
 }
 
@@ -23,6 +24,14 @@ type CompactResponse struct {
 }
 
 func (CompactResponse) Response() {}
+
+func (response CompactResponse) GetRevision() int64 {
+	return response.Revision
+}
+
+func (CompactResponse) IsWrite() bool {
+	return false
+}
 
 func deserializeCompactResponse(response *etcdserverpb.CompactionResponse) *CompactResponse {
 	if response == nil {
@@ -33,7 +42,7 @@ func deserializeCompactResponse(response *etcdserverpb.CompactionResponse) *Comp
 	}
 }
 
-func Compact(client *Client, request CompactRequest) (*CompactResponse, error) {
+func Compact(client *Client, request *CompactRequest) (*CompactResponse, error) {
 	response, err := client.Compact(serializeCompactRequest(request))
 	if err != nil {
 		return nil, err

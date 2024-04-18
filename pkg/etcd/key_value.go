@@ -5,11 +5,11 @@ import (
 )
 
 type KeyValue struct {
-	Key string
-	ModRevision int64
+	Key            string
+	ModRevision    int64
 	CreateRevision int64
-	Version int64
-	Value string
+	Version        int64
+	Value          string
 }
 
 func deserializeKeyValue(kv *mvccpb.KeyValue) *KeyValue {
@@ -17,10 +17,10 @@ func deserializeKeyValue(kv *mvccpb.KeyValue) *KeyValue {
 		return nil
 	}
 	return &KeyValue{
-		Key: string(kv.Key),
-		ModRevision: kv.ModRevision,
+		Key:            string(kv.Key),
+		ModRevision:    kv.ModRevision,
 		CreateRevision: kv.CreateRevision,
-		Version: kv.Version,
-		Value: string(kv.Value),
+		Version:        kv.Version,
+		Value:          string(kv.Value),
 	}
 }

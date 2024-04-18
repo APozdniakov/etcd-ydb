@@ -5,84 +5,76 @@ import (
 )
 
 type Compare struct {
-	Key string
-	RangeEnd string
-	// Result etcdserverpb.Compare_CompareResult
-	// Target etcdserverpb.Compare_CompareTarget
-	// TargetUnion etcdserverpb.isCompare_TargetUnion
+	Key            string
+	RangeEnd       string
+	Result         etcdserverpb.Compare_CompareResult
+	ModRevision    *int64
+	CreateRevision *int64
+	Version        *int64
+	Value          *string
+}
+
+func (compare Compare) Equal() Compare {
+	compare.Result = etcdserverpb.Compare_EQUAL
+	return compare
+}
+
+func (compare Compare) Greater() Compare {
+	compare.Result = etcdserverpb.Compare_GREATER
+	return compare
+}
+
+func (compare Compare) Less() Compare {
+	compare.Result = etcdserverpb.Compare_LESS
+	return compare
+}
+
+func (compare Compare) NotEqual() Compare {
+	compare.Result = etcdserverpb.Compare_NOT_EQUAL
+	return compare
+}
+
+func (compare Compare) SetModRevision(modRevision int64) Compare {
+	compare.ModRevision = &modRevision
+	return compare
+}
+
+func (compare Compare) SetCreateRevision(createRevision int64) Compare {
+	compare.CreateRevision = &createRevision
+	return compare
+}
+
+func (compare Compare) SetVersion(version int64) Compare {
+	compare.Version = &version
+	return compare
+}
+
+func (compare Compare) SetValue(value string) Compare {
+	compare.Value = &value
+	return compare
 }
 
 func serializeCompare(compare Compare) *etcdserverpb.Compare {
-	return &etcdserverpb.Compare{
-		Key: []byte(compare.Key),
+	result := &etcdserverpb.Compare{
+		Key:      []byte(compare.Key),
 		RangeEnd: []byte(compare.RangeEnd),
+		Result:   compare.Result,
 	}
-}
-
-type CompareBuilder struct {
-	cmp *etcdserverpb.Compare
-}
-
-func NewCompareBuilder() *CompareBuilder {
-	return &CompareBuilder{
-		cmp: &etcdserverpb.Compare{},
+	switch {
+	case compare.ModRevision != nil:
+		result.Target = etcdserverpb.Compare_MOD
+		result.TargetUnion = &etcdserverpb.Compare_ModRevision{ModRevision: *compare.ModRevision}
+	case compare.CreateRevision != nil:
+		result.Target = etcdserverpb.Compare_CREATE
+		result.TargetUnion = &etcdserverpb.Compare_CreateRevision{CreateRevision: *compare.CreateRevision}
+	case compare.Version != nil:
+		result.Target = etcdserverpb.Compare_VERSION
+		result.TargetUnion = &etcdserverpb.Compare_Version{Version: *compare.Version}
+	case compare.Value != nil:
+		result.Target = etcdserverpb.Compare_VALUE
+		result.TargetUnion = &etcdserverpb.Compare_Value{Value: []byte(*compare.Value)}
+	default:
+		panic("expected one of compare target")
 	}
-}
-
-func (builder *CompareBuilder) WithKey(key []byte) *CompareBuilder {
-	builder.cmp.Key = key
-	return builder
-}
-
-func (builder *CompareBuilder) WithRangeEnd(rangeEnd []byte) *CompareBuilder {
-	builder.cmp.RangeEnd = rangeEnd
-	return builder
-}
-
-func (builder *CompareBuilder) Equals() *CompareBuilder {
-	builder.cmp.Result = etcdserverpb.Compare_EQUAL
-	return builder
-}
-
-func (builder *CompareBuilder) Greater() *CompareBuilder {
-	builder.cmp.Result = etcdserverpb.Compare_GREATER
-	return builder
-}
-
-func (builder *CompareBuilder) Less() *CompareBuilder {
-	builder.cmp.Result = etcdserverpb.Compare_LESS
-	return builder
-}
-
-func (builder *CompareBuilder) NotEquals() *CompareBuilder {
-	builder.cmp.Result = etcdserverpb.Compare_NOT_EQUAL
-	return builder
-}
-
-func (builder *CompareBuilder) Version(version int64) *CompareBuilder {
-	builder.cmp.Target = etcdserverpb.Compare_VERSION
-	builder.cmp.TargetUnion = &etcdserverpb.Compare_Version{Version: version}
-	return builder
-}
-
-func (builder *CompareBuilder) CreateRev(rev int64) *CompareBuilder {
-	builder.cmp.Target = etcdserverpb.Compare_CREATE
-	builder.cmp.TargetUnion = &etcdserverpb.Compare_CreateRevision{CreateRevision: rev}
-	return builder
-}
-
-func (builder *CompareBuilder) ModRev(rev int64) *CompareBuilder {
-	builder.cmp.Target = etcdserverpb.Compare_MOD
-	builder.cmp.TargetUnion = &etcdserverpb.Compare_ModRevision{ModRevision: rev}
-	return builder
-}
-
-func (builder *CompareBuilder) Value(value []byte) *CompareBuilder {
-	builder.cmp.Target = etcdserverpb.Compare_VALUE
-	builder.cmp.TargetUnion = &etcdserverpb.Compare_Value{Value: value}
-	return builder
-}
-
-func (builder CompareBuilder) Build() *etcdserverpb.Compare {
-	return builder.cmp
+	return result
 }

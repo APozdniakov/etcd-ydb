@@ -12,7 +12,10 @@ type DeleteRequest struct {
 
 func (DeleteRequest) Request() {}
 
-func serializeDeleteRequest(request DeleteRequest) *etcdserverpb.DeleteRangeRequest {
+func serializeDeleteRequest(request *DeleteRequest) *etcdserverpb.DeleteRangeRequest {
+	if request == nil {
+		return nil
+	}
 	return &etcdserverpb.DeleteRangeRequest{
 		Key:      []byte(request.Key),
 		RangeEnd: []byte(request.RangeEnd),
@@ -27,6 +30,14 @@ type DeleteResponse struct {
 }
 
 func (DeleteResponse) Response() {}
+
+func (response DeleteResponse) GetRevision() int64 {
+	return response.Revision
+}
+
+func (response DeleteResponse) IsWrite() bool {
+	return response.Deleted != 0
+}
 
 func deserializeDeleteResponse(response *etcdserverpb.DeleteRangeResponse) *DeleteResponse {
 	if response == nil {
@@ -43,7 +54,7 @@ func deserializeDeleteResponse(response *etcdserverpb.DeleteRangeResponse) *Dele
 	return result
 }
 
-func Delete(client *Client, request DeleteRequest) (*DeleteResponse, error) {
+func Delete(client *Client, request *DeleteRequest) (*DeleteResponse, error) {
 	response, err := client.Delete(serializeDeleteRequest(request))
 	if err != nil {
 		return nil, err
