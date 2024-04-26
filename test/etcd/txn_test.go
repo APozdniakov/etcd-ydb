@@ -59,6 +59,7 @@ func fillTxnResponse(revision *int64, response *etcd.TxnResponse) {
 			fillRangeResponse(revision, response)
 		case *etcd.TxnResponse:
 			fillTxnResponse(revision, response)
+			response.Revision = 0
 		default:
 			panic("unknown response type")
 		}
@@ -207,44 +208,42 @@ func TestTxn(t *testing.T) {
 				},
 			},
 		},
-		// {
-		// 	name: "Recursive",
-		// 	testcases: []TestCase{
-		// 		{
-		// 			request: &etcd.TxnRequest{
-		// 				Compare: []etcd.Compare{},
-		// 				Success: []etcd.Request{
-		// 					&etcd.TxnRequest{
-		// 						Compare: []etcd.Compare{},
-		// 						Success: []etcd.Request{
-		// 							&etcd.RangeRequest{Key: "txn_", RangeEnd: getPrefix("txn_")},
-		// 						},
-		// 						Failure: []etcd.Request{},
-		// 					},
-		// 				},
-		// 				Failure: []etcd.Request{},
-		// 			},
-		// 			response: &etcd.TxnResponse{
-		// 				Revision: -1,
-		// 				Succeeded: true,
-		// 				Responses: []etcd.Response{
-		// 					&etcd.TxnResponse{
-		// 						Revision: -1,
-		// 						Succeeded: true,
-		// 						Responses: []etcd.Response{
-		// 							&etcd.RangeResponse{
-		// 								Count: 1,
-		// 								Kvs: []*etcd.KeyValue{
-		// 									{Key: "txn_key1", ModRevision: 0, CreateRevision: 0, Version: 1, Value: "txn_value1"},
-		// 								},
-		// 							},
-		// 						},
-		// 					},
-		// 				},
-		// 			},
-		// 		},
-		// 	},
-		// },
+		{
+			name: "Recursive",
+			testcases: []TestCase{
+				{
+					request: &etcd.TxnRequest{
+						Compare: []etcd.Compare{},
+						Success: []etcd.Request{
+							&etcd.TxnRequest{
+								Compare: []etcd.Compare{},
+								Success: []etcd.Request{
+									&etcd.RangeRequest{Key: "txn_", RangeEnd: getPrefix("txn_")},
+								},
+								Failure: []etcd.Request{},
+							},
+						},
+						Failure: []etcd.Request{},
+					},
+					response: &etcd.TxnResponse{
+						Succeeded: true,
+						Responses: []etcd.Response{
+							&etcd.TxnResponse{
+								Succeeded: true,
+								Responses: []etcd.Response{
+									&etcd.RangeResponse{
+										Count: 1,
+										Kvs: []*etcd.KeyValue{
+											{Key: "txn_key1", ModRevision: 0, CreateRevision: 0, Version: 1, Value: "txn_value1"},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 		{
 			name: "TearDown",
 			testcases: []TestCase{
