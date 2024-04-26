@@ -76,9 +76,11 @@ func TestTxn(t *testing.T) {
 			testcases: []TestCase{
 				{
 					request: &etcd.TxnRequest{
+						Compare: []etcd.Compare{},
 						Success: []etcd.Request{
 							&etcd.PutRequest{Key: "txn_key1", Value: "txn_value1", PrevKv: true},
 						},
+						Failure: []etcd.Request{},
 					},
 					response: &etcd.TxnResponse{
 						Succeeded: true,
@@ -150,7 +152,7 @@ func TestTxn(t *testing.T) {
 			testcases: []TestCase{
 				{
 					request: &etcd.TxnRequest{
-						Compare: []etcd.Compare{etcd.Compare{Key: "txn_", RangeEnd: getPrefix("txn_")}.Greater().SetValue("txn_value")},
+						Compare: []etcd.Compare{etcd.Compare{Key: "txn_key1"}.Greater().SetValue("txn_value")},
 						Success: []etcd.Request{},
 						Failure: []etcd.Request{},
 					},
@@ -164,10 +166,10 @@ func TestTxn(t *testing.T) {
 				{
 					request: &etcd.TxnRequest{
 						Compare: []etcd.Compare{
-							etcd.Compare{Key: "txn_", RangeEnd: getPrefix("txn_")}.Less().SetModRevision(1),
-							etcd.Compare{Key: "txn_", RangeEnd: getPrefix("txn_")}.NotEqual().SetCreateRevision(1),
-							etcd.Compare{Key: "txn_", RangeEnd: getPrefix("txn_")}.Greater().SetVersion(0),
-							etcd.Compare{Key: "txn_", RangeEnd: getPrefix("txn_")}.Equal().SetValue("txn_value1"),
+							etcd.Compare{Key: "txn_key1"}.Less().SetModRevision(1),
+							etcd.Compare{Key: "txn_key1"}.NotEqual().SetCreateRevision(1),
+							etcd.Compare{Key: "txn_key1"}.Greater().SetVersion(0),
+							etcd.Compare{Key: "txn_key1"}.Equal().SetValue("txn_value1"),
 						},
 						Success: []etcd.Request{},
 						Failure: []etcd.Request{},
