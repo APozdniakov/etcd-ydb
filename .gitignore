@@ -1,9 +1,3 @@
-build/
-cmake_build/
-cmake-build-*
-CMakeUserPresets.json
-.idea/
-.vscode/
-**/ydb_certs/
-**/ydb_data/
-**/__pycache__/
+*/etcd_data/
+*/ydb_certs/
+*/ydb_data/

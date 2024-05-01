@@ -11,11 +11,8 @@
   "customizations": {
     "vscode": {
       "extensions": [
-        "llvm-vs-code-extensions.vscode-clangd",
-        "ms-vscode.cmake-tools",
-        "ms-vscode.cpptools",
-        "ms-vscode.cpptools-extension-pack",
-        "ms-python.python"
+        "ms-python.python",
+        "golang.go"
       ]
     }
   },
@@ -23,8 +20,6 @@
     22379,
     22380
   ],
-  "remoteUser": "builder",
-  "updateRemoteUserUID": false,
   "workspaceFolder": "/workspaces/etcd-ydb",
   "shutdownAction": "stopCompose"
 }
