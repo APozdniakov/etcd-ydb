@@ -1,14 +1,2 @@
-build/
-.clang-format
-cmake_build/
-cmake-build-*
-CMakeUserPresets.json
 .devcontainer/
-docker-compose.yml
-Dockerfile
-.editorconfig
 .git/
-.gitignore
-.gitmodules
-.idea/
-.vscode/

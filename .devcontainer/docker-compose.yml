@@ -1,9 +1,8 @@
-version: "3.3"
 services:
   etcd:
     command:
       - /usr/local/bin/etcd
-      - --data-dir=/etcd-data
+      - --data-dir=/etcd_data
       - --name=node1
       - --initial-advertise-peer-urls=http://127.0.0.1:2380
       - --listen-peer-urls=http://0.0.0.0:2380
@@ -17,7 +16,7 @@ services:
       - "2379:2379"
       - "2380:2380"
     volumes:
-      - etcd-data:/etcd-data
+      - ./etcd_data:/etcd_data
   ydb:
     environment:
       YDB_DEFAULT_LOG_LEVEL: NOTICE
@@ -36,8 +35,7 @@ services:
       - ./ydb_certs:/ydb_certs
       - ./ydb_data:/ydb_data
   etcd-ydb:
-    image: kel.osll.ru:8083/docker/etcd-ydb-build-base:0.2.0
-    container_name: etcd-ydb-devcontainer
+    image: golang:1.21
     command: tail -f /dev/null
     depends_on:
       - etcd
@@ -47,5 +45,3 @@ services:
       - "22380:22380"
     volumes:
       - ../:/workspaces/etcd-ydb
-volumes:
-  etcd-data:

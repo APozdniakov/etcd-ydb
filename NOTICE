@@ -9,39 +9,3 @@ developed for etcd (https://github.com/etcd-io/etcd),
 licensed under the Apache 2.0 license. The licensing terms
 for etcd code can be found at:
 https://github.com/etcd-io/etcd/blob/main/LICENSE
-
-This product includes software components originally
-developed for grpc-gateway (https://github.com/grpc-ecosystem/grpc-gateway)
-licensed under the BSD-3-Clause license. The licensing terms
-for grpc-gateway code can be found at:
-https://github.com/grpc-ecosystem/grpc-gateway/blob/main/LICENSE.txt
-
-This product includes software components originally
-developed for googleapis (https://github.com/googleapis/googleapis),
-licensed under the Apache 2.0 license. The licensing terms
-for googleapis code can be found at:
-https://github.com/googleapis/googleapis/blob/master/LICENSE
-
-This product includes software components originally
-developed for Protocol Buffers for Go with Gadgets (https://github.com/gogo/protobuf)
-licensed under the BSD-3-Clause license. The licensing terms
-for Protocol Buffers for Go with Gadgets code can be found at:
-https://github.com/gogo/protobuf/blob/master/LICENSE
-
-This product includes software components originally
-developed for userver (https://github.com/userver-framework/userver),
-licensed under the Apache 2.0 license. The licensing terms
-for userver code can be found at:
-https://github.com/userver-framework/userver/blob/develop/LICENSE
-
-This product includes software components originally
-developed for conan-center-index (https://github.com/conan-io/conan-center-index),
-licensed under the MIT license. The licensing terms
-for conan-center-index code can be found at:
-https://github.com/conan-io/conan-center-index/blob/master/LICENSE
-
-This product includes software components originally
-developed for ydb (https://github.com/ydb-platform/ydb),
-licensed under the Apache 2.0 license. The licensing terms
-for ydb code can be found at:
-https://github.com/ydb-platform/ydb/blob/main/LICENSE
