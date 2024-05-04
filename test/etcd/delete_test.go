@@ -36,7 +36,7 @@ func TestDelete(t *testing.T) {
 			name: "Basic Single",
 			testcases: []TestCase{
 				{
-					request:  &etcd.RangeRequest{Key: emptyKey, RangeEnd: emptyKey},
+					request:  &etcd.RangeRequest{Key: etcd.EmptyKey, RangeEnd: etcd.EmptyKey},
 					response: &etcd.RangeResponse{Count: 0, Kvs: []*etcd.KeyValue{}},
 				},
 				{
@@ -48,7 +48,7 @@ func TestDelete(t *testing.T) {
 					response: &etcd.PutResponse{},
 				},
 				{
-					request: &etcd.RangeRequest{Key: emptyKey, RangeEnd: emptyKey},
+					request: &etcd.RangeRequest{Key: etcd.EmptyKey, RangeEnd: etcd.EmptyKey},
 					response: &etcd.RangeResponse{
 						Count: 2,
 						Kvs: []*etcd.KeyValue{
@@ -62,7 +62,7 @@ func TestDelete(t *testing.T) {
 					response: &etcd.DeleteResponse{Deleted: 1, PrevKvs: []*etcd.KeyValue{}},
 				},
 				{
-					request: &etcd.RangeRequest{Key: emptyKey, RangeEnd: emptyKey},
+					request: &etcd.RangeRequest{Key: etcd.EmptyKey, RangeEnd: etcd.EmptyKey},
 					response: &etcd.RangeResponse{
 						Count: 1,
 						Kvs: []*etcd.KeyValue{
@@ -75,7 +75,7 @@ func TestDelete(t *testing.T) {
 					response: &etcd.DeleteResponse{Deleted: 0, PrevKvs: []*etcd.KeyValue{}},
 				},
 				{
-					request: &etcd.RangeRequest{Key: emptyKey, RangeEnd: emptyKey},
+					request: &etcd.RangeRequest{Key: etcd.EmptyKey, RangeEnd: etcd.EmptyKey},
 					response: &etcd.RangeResponse{
 						Count: 1,
 						Kvs: []*etcd.KeyValue{
@@ -88,7 +88,7 @@ func TestDelete(t *testing.T) {
 					response: &etcd.DeleteResponse{Deleted: 1, PrevKvs: []*etcd.KeyValue{}},
 				},
 				{
-					request:  &etcd.RangeRequest{Key: emptyKey, RangeEnd: emptyKey},
+					request:  &etcd.RangeRequest{Key: etcd.EmptyKey, RangeEnd: etcd.EmptyKey},
 					response: &etcd.RangeResponse{Count: 0, Kvs: []*etcd.KeyValue{}},
 				},
 			},
@@ -117,7 +117,7 @@ func TestDelete(t *testing.T) {
 					response: &etcd.PutResponse{},
 				},
 				{
-					request:  &etcd.DeleteRequest{Key: "delete_", RangeEnd: getPrefix("delete_")},
+					request:  &etcd.DeleteRequest{Key: "delete_", RangeEnd: etcd.GetPrefix("delete_")},
 					response: &etcd.DeleteResponse{Deleted: 3, PrevKvs: []*etcd.KeyValue{}},
 				},
 				{
@@ -154,7 +154,7 @@ func TestDelete(t *testing.T) {
 					response: &etcd.PutResponse{},
 				},
 				{
-					request:  &etcd.DeleteRequest{Key: "delete_", RangeEnd: emptyKey},
+					request:  &etcd.DeleteRequest{Key: "delete_", RangeEnd: etcd.EmptyKey},
 					response: &etcd.DeleteResponse{Deleted: 4, PrevKvs: []*etcd.KeyValue{}},
 				},
 				{
@@ -191,7 +191,7 @@ func TestDelete(t *testing.T) {
 					response: &etcd.PutResponse{},
 				},
 				{
-					request:  &etcd.DeleteRequest{Key: emptyKey, RangeEnd: emptyKey},
+					request:  &etcd.DeleteRequest{Key: etcd.EmptyKey, RangeEnd: etcd.EmptyKey},
 					response: &etcd.DeleteResponse{Deleted: 5, PrevKvs: []*etcd.KeyValue{}},
 				},
 				{
@@ -208,7 +208,7 @@ func TestDelete(t *testing.T) {
 			name: "PrevKv Single",
 			testcases: []TestCase{
 				{
-					request:  &etcd.RangeRequest{Key: emptyKey, RangeEnd: emptyKey},
+					request:  &etcd.RangeRequest{Key: etcd.EmptyKey, RangeEnd: etcd.EmptyKey},
 					response: &etcd.RangeResponse{Count: 0, Kvs: []*etcd.KeyValue{}},
 				},
 				{
@@ -216,7 +216,7 @@ func TestDelete(t *testing.T) {
 					response: &etcd.PutResponse{},
 				},
 				{
-					request: &etcd.RangeRequest{Key: emptyKey, RangeEnd: emptyKey},
+					request: &etcd.RangeRequest{Key: etcd.EmptyKey, RangeEnd: etcd.EmptyKey},
 					response: &etcd.RangeResponse{
 						Count: 1,
 						Kvs: []*etcd.KeyValue{
@@ -234,7 +234,7 @@ func TestDelete(t *testing.T) {
 					},
 				},
 				{
-					request:  &etcd.RangeRequest{Key: emptyKey, RangeEnd: emptyKey},
+					request:  &etcd.RangeRequest{Key: etcd.EmptyKey, RangeEnd: etcd.EmptyKey},
 					response: &etcd.RangeResponse{Count: 0, Kvs: []*etcd.KeyValue{}},
 				},
 				{
@@ -242,7 +242,7 @@ func TestDelete(t *testing.T) {
 					response: &etcd.DeleteResponse{Deleted: 0, PrevKvs: []*etcd.KeyValue{}},
 				},
 				{
-					request:  &etcd.RangeRequest{Key: emptyKey, RangeEnd: emptyKey},
+					request:  &etcd.RangeRequest{Key: etcd.EmptyKey, RangeEnd: etcd.EmptyKey},
 					response: &etcd.RangeResponse{Count: 0, Kvs: []*etcd.KeyValue{}},
 				},
 			},
@@ -251,7 +251,7 @@ func TestDelete(t *testing.T) {
 			name: "PrevKv Prefix",
 			testcases: []TestCase{
 				{
-					request:  &etcd.RangeRequest{Key: emptyKey, RangeEnd: emptyKey},
+					request:  &etcd.RangeRequest{Key: etcd.EmptyKey, RangeEnd: etcd.EmptyKey},
 					response: &etcd.RangeResponse{Count: 0, Kvs: []*etcd.KeyValue{}},
 				},
 				{
@@ -275,7 +275,7 @@ func TestDelete(t *testing.T) {
 					response: &etcd.PutResponse{},
 				},
 				{
-					request: &etcd.RangeRequest{Key: emptyKey, RangeEnd: emptyKey},
+					request: &etcd.RangeRequest{Key: etcd.EmptyKey, RangeEnd: etcd.EmptyKey},
 					response: &etcd.RangeResponse{
 						Count: 5,
 						Kvs: []*etcd.KeyValue{
@@ -288,7 +288,7 @@ func TestDelete(t *testing.T) {
 					},
 				},
 				{
-					request: &etcd.DeleteRequest{Key: "delete_", RangeEnd: getPrefix("delete_"), PrevKv: true},
+					request: &etcd.DeleteRequest{Key: "delete_", RangeEnd: etcd.GetPrefix("delete_"), PrevKv: true},
 					response: &etcd.DeleteResponse{
 						Deleted: 3,
 						PrevKvs: []*etcd.KeyValue{
@@ -299,7 +299,7 @@ func TestDelete(t *testing.T) {
 					},
 				},
 				{
-					request: &etcd.RangeRequest{Key: emptyKey, RangeEnd: emptyKey},
+					request: &etcd.RangeRequest{Key: etcd.EmptyKey, RangeEnd: etcd.EmptyKey},
 					response: &etcd.RangeResponse{
 						Count: 2,
 						Kvs: []*etcd.KeyValue{
@@ -318,7 +318,7 @@ func TestDelete(t *testing.T) {
 					},
 				},
 				{
-					request: &etcd.RangeRequest{Key: emptyKey, RangeEnd: emptyKey},
+					request: &etcd.RangeRequest{Key: etcd.EmptyKey, RangeEnd: etcd.EmptyKey},
 					response: &etcd.RangeResponse{
 						Count: 1,
 						Kvs: []*etcd.KeyValue{
@@ -336,7 +336,7 @@ func TestDelete(t *testing.T) {
 					},
 				},
 				{
-					request:  &etcd.RangeRequest{Key: emptyKey, RangeEnd: emptyKey},
+					request:  &etcd.RangeRequest{Key: etcd.EmptyKey, RangeEnd: etcd.EmptyKey},
 					response: &etcd.RangeResponse{Count: 0, Kvs: []*etcd.KeyValue{}},
 				},
 			},
@@ -345,7 +345,7 @@ func TestDelete(t *testing.T) {
 			name: "PrevKv FromKey",
 			testcases: []TestCase{
 				{
-					request:  &etcd.RangeRequest{Key: emptyKey, RangeEnd: emptyKey},
+					request:  &etcd.RangeRequest{Key: etcd.EmptyKey, RangeEnd: etcd.EmptyKey},
 					response: &etcd.RangeResponse{Count: 0, Kvs: []*etcd.KeyValue{}},
 				},
 				{
@@ -369,7 +369,7 @@ func TestDelete(t *testing.T) {
 					response: &etcd.PutResponse{},
 				},
 				{
-					request: &etcd.RangeRequest{Key: emptyKey, RangeEnd: emptyKey},
+					request: &etcd.RangeRequest{Key: etcd.EmptyKey, RangeEnd: etcd.EmptyKey},
 					response: &etcd.RangeResponse{
 						Count: 5,
 						Kvs: []*etcd.KeyValue{
@@ -382,7 +382,7 @@ func TestDelete(t *testing.T) {
 					},
 				},
 				{
-					request: &etcd.DeleteRequest{Key: "delete_", RangeEnd: emptyKey, PrevKv: true},
+					request: &etcd.DeleteRequest{Key: "delete_", RangeEnd: etcd.EmptyKey, PrevKv: true},
 					response: &etcd.DeleteResponse{
 						Deleted: 4,
 						PrevKvs: []*etcd.KeyValue{
@@ -394,7 +394,7 @@ func TestDelete(t *testing.T) {
 					},
 				},
 				{
-					request: &etcd.RangeRequest{Key: emptyKey, RangeEnd: emptyKey},
+					request: &etcd.RangeRequest{Key: etcd.EmptyKey, RangeEnd: etcd.EmptyKey},
 					response: &etcd.RangeResponse{
 						Count: 1,
 						Kvs: []*etcd.KeyValue{
@@ -407,7 +407,7 @@ func TestDelete(t *testing.T) {
 					response: &etcd.DeleteResponse{Deleted: 0, PrevKvs: []*etcd.KeyValue{}},
 				},
 				{
-					request: &etcd.RangeRequest{Key: emptyKey, RangeEnd: emptyKey},
+					request: &etcd.RangeRequest{Key: etcd.EmptyKey, RangeEnd: etcd.EmptyKey},
 					response: &etcd.RangeResponse{
 						Count: 1,
 						Kvs: []*etcd.KeyValue{
@@ -425,7 +425,7 @@ func TestDelete(t *testing.T) {
 					},
 				},
 				{
-					request:  &etcd.RangeRequest{Key: emptyKey, RangeEnd: emptyKey},
+					request:  &etcd.RangeRequest{Key: etcd.EmptyKey, RangeEnd: etcd.EmptyKey},
 					response: &etcd.RangeResponse{Count: 0, Kvs: []*etcd.KeyValue{}},
 				},
 			},
@@ -434,7 +434,7 @@ func TestDelete(t *testing.T) {
 			name: "PrevKv All",
 			testcases: []TestCase{
 				{
-					request:  &etcd.RangeRequest{Key: emptyKey, RangeEnd: emptyKey},
+					request:  &etcd.RangeRequest{Key: etcd.EmptyKey, RangeEnd: etcd.EmptyKey},
 					response: &etcd.RangeResponse{Count: 0, Kvs: []*etcd.KeyValue{}},
 				},
 				{
@@ -458,7 +458,7 @@ func TestDelete(t *testing.T) {
 					response: &etcd.PutResponse{},
 				},
 				{
-					request: &etcd.RangeRequest{Key: emptyKey, RangeEnd: emptyKey},
+					request: &etcd.RangeRequest{Key: etcd.EmptyKey, RangeEnd: etcd.EmptyKey},
 					response: &etcd.RangeResponse{
 						Count: 5,
 						Kvs: []*etcd.KeyValue{
@@ -471,7 +471,7 @@ func TestDelete(t *testing.T) {
 					},
 				},
 				{
-					request: &etcd.DeleteRequest{Key: emptyKey, RangeEnd: emptyKey, PrevKv: true},
+					request: &etcd.DeleteRequest{Key: etcd.EmptyKey, RangeEnd: etcd.EmptyKey, PrevKv: true},
 					response: &etcd.DeleteResponse{
 						Deleted: 5,
 						PrevKvs: []*etcd.KeyValue{
@@ -484,7 +484,7 @@ func TestDelete(t *testing.T) {
 					},
 				},
 				{
-					request:  &etcd.RangeRequest{Key: emptyKey, RangeEnd: emptyKey},
+					request:  &etcd.RangeRequest{Key: etcd.EmptyKey, RangeEnd: etcd.EmptyKey},
 					response: &etcd.RangeResponse{Count: 0, Kvs: []*etcd.KeyValue{}},
 				},
 				{
@@ -492,7 +492,7 @@ func TestDelete(t *testing.T) {
 					response: &etcd.DeleteResponse{Deleted: 0, PrevKvs: []*etcd.KeyValue{}},
 				},
 				{
-					request:  &etcd.RangeRequest{Key: emptyKey, RangeEnd: emptyKey},
+					request:  &etcd.RangeRequest{Key: etcd.EmptyKey, RangeEnd: etcd.EmptyKey},
 					response: &etcd.RangeResponse{Count: 0, Kvs: []*etcd.KeyValue{}},
 				},
 				{
@@ -500,7 +500,7 @@ func TestDelete(t *testing.T) {
 					response: &etcd.DeleteResponse{Deleted: 0, PrevKvs: []*etcd.KeyValue{}},
 				},
 				{
-					request:  &etcd.RangeRequest{Key: emptyKey, RangeEnd: emptyKey},
+					request:  &etcd.RangeRequest{Key: etcd.EmptyKey, RangeEnd: etcd.EmptyKey},
 					response: &etcd.RangeResponse{Count: 0, Kvs: []*etcd.KeyValue{}},
 				},
 			},

@@ -2,10 +2,12 @@ package etcd
 
 import (
 	"context"
+	"os"
 
 	"go.etcd.io/etcd/api/v3/etcdserverpb"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/grpclog"
 )
 
 type Request interface {
@@ -32,6 +34,8 @@ type Client struct {
 }
 
 func NewClient(endpoint string) (*Client, error) {
+	grpclog.SetLoggerV2(grpclog.NewLoggerV2(os.Stderr, os.Stderr, os.Stderr))
+
 	opts := []grpc.DialOption{
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	}

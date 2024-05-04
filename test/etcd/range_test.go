@@ -112,7 +112,7 @@ func TestRange(t *testing.T) {
 			name: "Basic Prefix",
 			testcases: []TestCase{
 				{
-					request: &etcd.RangeRequest{Key: "range_", RangeEnd: getPrefix("range_")},
+					request: &etcd.RangeRequest{Key: "range_", RangeEnd: etcd.GetPrefix("range_")},
 					response: &etcd.RangeResponse{
 						Count: 3,
 						Kvs: []*etcd.KeyValue{
@@ -128,7 +128,7 @@ func TestRange(t *testing.T) {
 			name: "Basic FromKey",
 			testcases: []TestCase{
 				{
-					request: &etcd.RangeRequest{Key: "range_", RangeEnd: emptyKey},
+					request: &etcd.RangeRequest{Key: "range_", RangeEnd: etcd.EmptyKey},
 					response: &etcd.RangeResponse{
 						Count: 4,
 						Kvs: []*etcd.KeyValue{
@@ -145,7 +145,7 @@ func TestRange(t *testing.T) {
 			name: "Basic All",
 			testcases: []TestCase{
 				{
-					request: &etcd.RangeRequest{Key: emptyKey, RangeEnd: emptyKey},
+					request: &etcd.RangeRequest{Key: etcd.EmptyKey, RangeEnd: etcd.EmptyKey},
 					response: &etcd.RangeResponse{
 						Count: 5,
 						Kvs: []*etcd.KeyValue{
@@ -163,7 +163,7 @@ func TestRange(t *testing.T) {
 			name: "Limit",
 			testcases: []TestCase{
 				{
-					request: &etcd.RangeRequest{Key: "range_", RangeEnd: getPrefix("range_"), Limit: 1},
+					request: &etcd.RangeRequest{Key: "range_", RangeEnd: etcd.GetPrefix("range_"), Limit: 1},
 					response: &etcd.RangeResponse{
 						Count: 3,
 						More:  true,
@@ -173,7 +173,7 @@ func TestRange(t *testing.T) {
 					},
 				},
 				{
-					request: &etcd.RangeRequest{Key: "range_", RangeEnd: getPrefix("range_"), Limit: 2},
+					request: &etcd.RangeRequest{Key: "range_", RangeEnd: etcd.GetPrefix("range_"), Limit: 2},
 					response: &etcd.RangeResponse{
 						Count: 3,
 						More:  true,
@@ -184,7 +184,7 @@ func TestRange(t *testing.T) {
 					},
 				},
 				{
-					request: &etcd.RangeRequest{Key: "range_", RangeEnd: getPrefix("range_"), Limit: 3},
+					request: &etcd.RangeRequest{Key: "range_", RangeEnd: etcd.GetPrefix("range_"), Limit: 3},
 					response: &etcd.RangeResponse{
 						Count: 3,
 						More:  false,
@@ -196,7 +196,7 @@ func TestRange(t *testing.T) {
 					},
 				},
 				{
-					request: &etcd.RangeRequest{Key: "range_", RangeEnd: getPrefix("range_"), Limit: 4},
+					request: &etcd.RangeRequest{Key: "range_", RangeEnd: etcd.GetPrefix("range_"), Limit: 4},
 					response: &etcd.RangeResponse{
 						Count: 3,
 						More:  false,
@@ -208,7 +208,7 @@ func TestRange(t *testing.T) {
 					},
 				},
 				{
-					request: &etcd.RangeRequest{Key: "range_", RangeEnd: getPrefix("range_"), Limit: 5},
+					request: &etcd.RangeRequest{Key: "range_", RangeEnd: etcd.GetPrefix("range_"), Limit: 5},
 					response: &etcd.RangeResponse{
 						Count: 3,
 						More:  false,
@@ -225,7 +225,7 @@ func TestRange(t *testing.T) {
 			name: "Revision",
 			testcases: []TestCase{
 				{
-					request: &etcd.RangeRequest{Key: emptyKey, RangeEnd: emptyKey, Revision: -7},
+					request: &etcd.RangeRequest{Key: etcd.EmptyKey, RangeEnd: etcd.EmptyKey, Revision: -7},
 					response: &etcd.RangeResponse{
 						Count: 1,
 						Kvs: []*etcd.KeyValue{
@@ -234,7 +234,7 @@ func TestRange(t *testing.T) {
 					},
 				},
 				{
-					request: &etcd.RangeRequest{Key: emptyKey, RangeEnd: emptyKey, Revision: -6},
+					request: &etcd.RangeRequest{Key: etcd.EmptyKey, RangeEnd: etcd.EmptyKey, Revision: -6},
 					response: &etcd.RangeResponse{
 						Count: 2,
 						Kvs: []*etcd.KeyValue{
@@ -244,7 +244,7 @@ func TestRange(t *testing.T) {
 					},
 				},
 				{
-					request: &etcd.RangeRequest{Key: emptyKey, RangeEnd: emptyKey, Revision: -5},
+					request: &etcd.RangeRequest{Key: etcd.EmptyKey, RangeEnd: etcd.EmptyKey, Revision: -5},
 					response: &etcd.RangeResponse{
 						Count: 3,
 						Kvs: []*etcd.KeyValue{
@@ -255,7 +255,7 @@ func TestRange(t *testing.T) {
 					},
 				},
 				{
-					request: &etcd.RangeRequest{Key: emptyKey, RangeEnd: emptyKey, Revision: -4},
+					request: &etcd.RangeRequest{Key: etcd.EmptyKey, RangeEnd: etcd.EmptyKey, Revision: -4},
 					response: &etcd.RangeResponse{
 						Count: 4,
 						Kvs: []*etcd.KeyValue{
@@ -267,7 +267,7 @@ func TestRange(t *testing.T) {
 					},
 				},
 				{
-					request: &etcd.RangeRequest{Key: emptyKey, RangeEnd: emptyKey, Revision: -3},
+					request: &etcd.RangeRequest{Key: etcd.EmptyKey, RangeEnd: etcd.EmptyKey, Revision: -3},
 					response: &etcd.RangeResponse{
 						Count: 4,
 						Kvs: []*etcd.KeyValue{
@@ -279,7 +279,7 @@ func TestRange(t *testing.T) {
 					},
 				},
 				{
-					request: &etcd.RangeRequest{Key: emptyKey, RangeEnd: emptyKey, Revision: -2},
+					request: &etcd.RangeRequest{Key: etcd.EmptyKey, RangeEnd: etcd.EmptyKey, Revision: -2},
 					response: &etcd.RangeResponse{
 						Count: 4,
 						Kvs: []*etcd.KeyValue{
@@ -291,7 +291,7 @@ func TestRange(t *testing.T) {
 					},
 				},
 				{
-					request: &etcd.RangeRequest{Key: emptyKey, RangeEnd: emptyKey, Revision: -1},
+					request: &etcd.RangeRequest{Key: etcd.EmptyKey, RangeEnd: etcd.EmptyKey, Revision: -1},
 					response: &etcd.RangeResponse{
 						Count: 4,
 						Kvs: []*etcd.KeyValue{
@@ -303,7 +303,7 @@ func TestRange(t *testing.T) {
 					},
 				},
 				{
-					request: &etcd.RangeRequest{Key: emptyKey, RangeEnd: emptyKey, Revision: 0},
+					request: &etcd.RangeRequest{Key: etcd.EmptyKey, RangeEnd: etcd.EmptyKey, Revision: 0},
 					response: &etcd.RangeResponse{
 						Count: 5,
 						Kvs: []*etcd.KeyValue{
@@ -316,7 +316,7 @@ func TestRange(t *testing.T) {
 					},
 				},
 				{
-					request: &etcd.RangeRequest{Key: emptyKey, RangeEnd: emptyKey, Revision: 1},
+					request: &etcd.RangeRequest{Key: etcd.EmptyKey, RangeEnd: etcd.EmptyKey, Revision: 1},
 					err:     rpctypes.ErrGRPCFutureRev,
 				},
 			},
@@ -325,7 +325,7 @@ func TestRange(t *testing.T) {
 			name: "Sort",
 			testcases: []TestCase{
 				{
-					request: etcd.RangeRequest{Key: "range_", RangeEnd: getPrefix("range_")}.OrderByKey().Ascending(),
+					request: etcd.RangeRequest{Key: "range_", RangeEnd: etcd.GetPrefix("range_")}.OrderByKey().Ascending(),
 					response: &etcd.RangeResponse{
 						Count: 3,
 						Kvs: []*etcd.KeyValue{
@@ -336,7 +336,7 @@ func TestRange(t *testing.T) {
 					},
 				},
 				{
-					request: etcd.RangeRequest{Key: "range_", RangeEnd: getPrefix("range_")}.OrderByKey().Descending(),
+					request: etcd.RangeRequest{Key: "range_", RangeEnd: etcd.GetPrefix("range_")}.OrderByKey().Descending(),
 					response: &etcd.RangeResponse{
 						Count: 3,
 						Kvs: []*etcd.KeyValue{
@@ -347,7 +347,7 @@ func TestRange(t *testing.T) {
 					},
 				},
 				{
-					request: etcd.RangeRequest{Key: "range_", RangeEnd: getPrefix("range_")}.OrderByModRevision().Ascending(),
+					request: etcd.RangeRequest{Key: "range_", RangeEnd: etcd.GetPrefix("range_")}.OrderByModRevision().Ascending(),
 					response: &etcd.RangeResponse{
 						Count: 3,
 						Kvs: []*etcd.KeyValue{
@@ -358,7 +358,7 @@ func TestRange(t *testing.T) {
 					},
 				},
 				{
-					request: etcd.RangeRequest{Key: "range_", RangeEnd: getPrefix("range_")}.OrderByModRevision().Descending(),
+					request: etcd.RangeRequest{Key: "range_", RangeEnd: etcd.GetPrefix("range_")}.OrderByModRevision().Descending(),
 					response: &etcd.RangeResponse{
 						Count: 3,
 						Kvs: []*etcd.KeyValue{
@@ -369,7 +369,7 @@ func TestRange(t *testing.T) {
 					},
 				},
 				{
-					request: etcd.RangeRequest{Key: "range_", RangeEnd: getPrefix("range_")}.OrderByCreateRevision().Ascending(),
+					request: etcd.RangeRequest{Key: "range_", RangeEnd: etcd.GetPrefix("range_")}.OrderByCreateRevision().Ascending(),
 					response: &etcd.RangeResponse{
 						Count: 3,
 						Kvs: []*etcd.KeyValue{
@@ -380,7 +380,7 @@ func TestRange(t *testing.T) {
 					},
 				},
 				{
-					request: etcd.RangeRequest{Key: "range_", RangeEnd: getPrefix("range_")}.OrderByCreateRevision().Descending(),
+					request: etcd.RangeRequest{Key: "range_", RangeEnd: etcd.GetPrefix("range_")}.OrderByCreateRevision().Descending(),
 					response: &etcd.RangeResponse{
 						Count: 3,
 						Kvs: []*etcd.KeyValue{
@@ -391,7 +391,7 @@ func TestRange(t *testing.T) {
 					},
 				},
 				{
-					request: etcd.RangeRequest{Key: "range_", RangeEnd: getPrefix("range_")}.OrderByVersion().Ascending(),
+					request: etcd.RangeRequest{Key: "range_", RangeEnd: etcd.GetPrefix("range_")}.OrderByVersion().Ascending(),
 					response: &etcd.RangeResponse{
 						Count: 3,
 						Kvs: []*etcd.KeyValue{
@@ -402,7 +402,7 @@ func TestRange(t *testing.T) {
 					},
 				},
 				{
-					request: etcd.RangeRequest{Key: "range_", RangeEnd: getPrefix("range_")}.OrderByVersion().Descending(),
+					request: etcd.RangeRequest{Key: "range_", RangeEnd: etcd.GetPrefix("range_")}.OrderByVersion().Descending(),
 					response: &etcd.RangeResponse{
 						Count: 3,
 						Kvs: []*etcd.KeyValue{
@@ -413,7 +413,7 @@ func TestRange(t *testing.T) {
 					},
 				},
 				{
-					request: etcd.RangeRequest{Key: "range_", RangeEnd: getPrefix("range_")}.OrderByValue().Ascending(),
+					request: etcd.RangeRequest{Key: "range_", RangeEnd: etcd.GetPrefix("range_")}.OrderByValue().Ascending(),
 					response: &etcd.RangeResponse{
 						Count: 3,
 						Kvs: []*etcd.KeyValue{
@@ -424,7 +424,7 @@ func TestRange(t *testing.T) {
 					},
 				},
 				{
-					request: etcd.RangeRequest{Key: "range_", RangeEnd: getPrefix("range_")}.OrderByValue().Descending(),
+					request: etcd.RangeRequest{Key: "range_", RangeEnd: etcd.GetPrefix("range_")}.OrderByValue().Descending(),
 					response: &etcd.RangeResponse{
 						Count: 3,
 						Kvs: []*etcd.KeyValue{
@@ -440,7 +440,7 @@ func TestRange(t *testing.T) {
 			name: "KeysOnly",
 			testcases: []TestCase{
 				{
-					request: &etcd.RangeRequest{Key: "range_", RangeEnd: getPrefix("range_"), KeysOnly: true},
+					request: &etcd.RangeRequest{Key: "range_", RangeEnd: etcd.GetPrefix("range_"), KeysOnly: true},
 					response: &etcd.RangeResponse{
 						Count: 3,
 						Kvs: []*etcd.KeyValue{
@@ -456,11 +456,11 @@ func TestRange(t *testing.T) {
 			name: "CountOnly",
 			testcases: []TestCase{
 				{
-					request:  &etcd.RangeRequest{Key: "range_", RangeEnd: getPrefix("range_"), CountOnly: true},
+					request:  &etcd.RangeRequest{Key: "range_", RangeEnd: etcd.GetPrefix("range_"), CountOnly: true},
 					response: &etcd.RangeResponse{Count: 3, Kvs: []*etcd.KeyValue{}},
 				},
 				{
-					request:  &etcd.RangeRequest{Key: "range_", RangeEnd: getPrefix("range_"), KeysOnly: true, CountOnly: true},
+					request:  &etcd.RangeRequest{Key: "range_", RangeEnd: etcd.GetPrefix("range_"), KeysOnly: true, CountOnly: true},
 					response: &etcd.RangeResponse{Count: 3, Kvs: []*etcd.KeyValue{}},
 				},
 			},
@@ -478,7 +478,7 @@ func TestRange(t *testing.T) {
 					},
 				},
 				{
-					request: &etcd.DeleteRequest{Key: "range_", RangeEnd: getPrefix("range_"), PrevKv: true},
+					request: &etcd.DeleteRequest{Key: "range_", RangeEnd: etcd.GetPrefix("range_"), PrevKv: true},
 					response: &etcd.DeleteResponse{
 						Deleted: 3,
 						PrevKvs: []*etcd.KeyValue{

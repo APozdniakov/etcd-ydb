@@ -87,7 +87,7 @@ func TestCompact(t *testing.T) {
 			name: "TearDown",
 			testcases: []TestCase{
 				{
-					request: &etcd.DeleteRequest{Key: "compact_", RangeEnd: getPrefix("compact_"), PrevKv: true},
+					request: &etcd.DeleteRequest{Key: "compact_", RangeEnd: etcd.GetPrefix("compact_"), PrevKv: true},
 					response: &etcd.DeleteResponse{
 						Deleted: 1,
 						PrevKvs: []*etcd.KeyValue{

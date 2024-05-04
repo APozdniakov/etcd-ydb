@@ -4,6 +4,17 @@ import (
 	"go.etcd.io/etcd/api/v3/etcdserverpb"
 )
 
+var EmptyKey = string([]byte{0})
+
+func GetPrefix(range_end string) string {
+	for i := len(range_end) - 1; i >= 0; i-- {
+		if range_end[i] < 0xff {
+			return string(append([]byte(range_end[:i]), range_end[i]+1))
+		}
+	}
+	return EmptyKey
+}
+
 type RangeRequest struct {
 	Key               string
 	RangeEnd          string

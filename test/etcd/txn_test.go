@@ -95,7 +95,7 @@ func TestTxn(t *testing.T) {
 			name: "Basic",
 			testcases: []TestCase{
 				{
-					request: &etcd.RangeRequest{Key: "txn_", RangeEnd: getPrefix("txn_")},
+					request: &etcd.RangeRequest{Key: "txn_", RangeEnd: etcd.GetPrefix("txn_")},
 					response: &etcd.RangeResponse{
 						Count: 1,
 						Kvs: []*etcd.KeyValue{
@@ -107,7 +107,7 @@ func TestTxn(t *testing.T) {
 					request: &etcd.TxnRequest{
 						Compare: []etcd.Compare{},
 						Success: []etcd.Request{
-							&etcd.RangeRequest{Key: "txn_", RangeEnd: getPrefix("txn_")},
+							&etcd.RangeRequest{Key: "txn_", RangeEnd: etcd.GetPrefix("txn_")},
 							&etcd.DeleteRequest{Key: "z", PrevKv: true},
 						},
 						Failure: []etcd.Request{
@@ -128,7 +128,7 @@ func TestTxn(t *testing.T) {
 					},
 				},
 				{
-					request: &etcd.RangeRequest{Key: "txn_", RangeEnd: getPrefix("txn_")},
+					request: &etcd.RangeRequest{Key: "txn_", RangeEnd: etcd.GetPrefix("txn_")},
 					response: &etcd.RangeResponse{
 						Count: 1,
 						Kvs: []*etcd.KeyValue{
@@ -182,7 +182,7 @@ func TestTxn(t *testing.T) {
 			name: "DuplicateKey",
 			testcases: []TestCase{
 				{
-					request: &etcd.RangeRequest{Key: "txn_", RangeEnd: getPrefix("txn_")},
+					request: &etcd.RangeRequest{Key: "txn_", RangeEnd: etcd.GetPrefix("txn_")},
 					response: &etcd.RangeResponse{
 						Count: 1,
 						Kvs: []*etcd.KeyValue{
@@ -200,7 +200,7 @@ func TestTxn(t *testing.T) {
 					err: rpctypes.ErrGRPCDuplicateKey,
 				},
 				{
-					request: &etcd.RangeRequest{Key: "txn_", RangeEnd: getPrefix("txn_")},
+					request: &etcd.RangeRequest{Key: "txn_", RangeEnd: etcd.GetPrefix("txn_")},
 					response: &etcd.RangeResponse{
 						Count: 1,
 						Kvs: []*etcd.KeyValue{
@@ -220,7 +220,7 @@ func TestTxn(t *testing.T) {
 							&etcd.TxnRequest{
 								Compare: []etcd.Compare{},
 								Success: []etcd.Request{
-									&etcd.RangeRequest{Key: "txn_", RangeEnd: getPrefix("txn_")},
+									&etcd.RangeRequest{Key: "txn_", RangeEnd: etcd.GetPrefix("txn_")},
 								},
 								Failure: []etcd.Request{},
 							},
@@ -252,7 +252,7 @@ func TestTxn(t *testing.T) {
 				{
 					request: &etcd.TxnRequest{
 						Success: []etcd.Request{
-							&etcd.DeleteRequest{Key: "txn_", RangeEnd: getPrefix("txn_"), PrevKv: true},
+							&etcd.DeleteRequest{Key: "txn_", RangeEnd: etcd.GetPrefix("txn_"), PrevKv: true},
 						},
 					},
 					response: &etcd.TxnResponse{

@@ -11,17 +11,6 @@ import (
 
 var revision *int64
 
-var emptyKey = string([]byte{0})
-
-func getPrefix(range_end string) string {
-	for i := len(range_end) - 1; i >= 0; i-- {
-		if range_end[i] < 0xff {
-			return string(append([]byte(range_end[:i]), range_end[i]+1))
-		}
-	}
-	return emptyKey
-}
-
 type TestCase struct {
 	request  etcd.Request
 	response etcd.Response

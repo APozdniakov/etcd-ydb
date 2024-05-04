@@ -45,7 +45,7 @@ func TestPut(t *testing.T) {
 			name: "Basic",
 			testcases: []TestCase{
 				{
-					request: &etcd.RangeRequest{Key: "put_", RangeEnd: getPrefix("put_")},
+					request: &etcd.RangeRequest{Key: "put_", RangeEnd: etcd.GetPrefix("put_")},
 					response: &etcd.RangeResponse{
 						Count: 1,
 						Kvs: []*etcd.KeyValue{
@@ -58,7 +58,7 @@ func TestPut(t *testing.T) {
 					response: &etcd.PutResponse{},
 				},
 				{
-					request: &etcd.RangeRequest{Key: "put_", RangeEnd: getPrefix("put_"), Revision: -1},
+					request: &etcd.RangeRequest{Key: "put_", RangeEnd: etcd.GetPrefix("put_"), Revision: -1},
 					response: &etcd.RangeResponse{
 						Count: 1,
 						Kvs: []*etcd.KeyValue{
@@ -67,7 +67,7 @@ func TestPut(t *testing.T) {
 					},
 				},
 				{
-					request: &etcd.RangeRequest{Key: "put_", RangeEnd: getPrefix("put_"), Revision: 0},
+					request: &etcd.RangeRequest{Key: "put_", RangeEnd: etcd.GetPrefix("put_"), Revision: 0},
 					response: &etcd.RangeResponse{
 						Count: 1,
 						Kvs: []*etcd.KeyValue{
@@ -81,7 +81,7 @@ func TestPut(t *testing.T) {
 			name: "PrevKv",
 			testcases: []TestCase{
 				{
-					request: &etcd.RangeRequest{Key: "put_", RangeEnd: getPrefix("put_")},
+					request: &etcd.RangeRequest{Key: "put_", RangeEnd: etcd.GetPrefix("put_")},
 					response: &etcd.RangeResponse{
 						Count: 1,
 						Kvs: []*etcd.KeyValue{
@@ -94,7 +94,7 @@ func TestPut(t *testing.T) {
 					response: &etcd.PutResponse{PrevKv: &etcd.KeyValue{Key: "put_key", ModRevision: -1, CreateRevision: -2, Version: 2, Value: "put_value1"}},
 				},
 				{
-					request: &etcd.RangeRequest{Key: "put_", RangeEnd: getPrefix("put_"), Revision: -1},
+					request: &etcd.RangeRequest{Key: "put_", RangeEnd: etcd.GetPrefix("put_"), Revision: -1},
 					response: &etcd.RangeResponse{
 						Count: 1,
 						Kvs: []*etcd.KeyValue{
@@ -103,7 +103,7 @@ func TestPut(t *testing.T) {
 					},
 				},
 				{
-					request: &etcd.RangeRequest{Key: "put_", RangeEnd: getPrefix("put_"), Revision: 0},
+					request: &etcd.RangeRequest{Key: "put_", RangeEnd: etcd.GetPrefix("put_"), Revision: 0},
 					response: &etcd.RangeResponse{
 						Count: 1,
 						Kvs: []*etcd.KeyValue{
@@ -117,7 +117,7 @@ func TestPut(t *testing.T) {
 			name: "IgnoreValue",
 			testcases: []TestCase{
 				{
-					request: &etcd.RangeRequest{Key: "put_", RangeEnd: getPrefix("put_")},
+					request: &etcd.RangeRequest{Key: "put_", RangeEnd: etcd.GetPrefix("put_")},
 					response: &etcd.RangeResponse{
 						Count: 1,
 						Kvs: []*etcd.KeyValue{
@@ -130,7 +130,7 @@ func TestPut(t *testing.T) {
 					response: &etcd.PutResponse{},
 				},
 				{
-					request: &etcd.RangeRequest{Key: "put_", RangeEnd: getPrefix("put_"), Revision: -1},
+					request: &etcd.RangeRequest{Key: "put_", RangeEnd: etcd.GetPrefix("put_"), Revision: -1},
 					response: &etcd.RangeResponse{
 						Count: 1,
 						Kvs: []*etcd.KeyValue{
@@ -139,7 +139,7 @@ func TestPut(t *testing.T) {
 					},
 				},
 				{
-					request: &etcd.RangeRequest{Key: "put_", RangeEnd: getPrefix("put_"), Revision: 0},
+					request: &etcd.RangeRequest{Key: "put_", RangeEnd: etcd.GetPrefix("put_"), Revision: 0},
 					response: &etcd.RangeResponse{
 						Count: 1,
 						Kvs: []*etcd.KeyValue{
@@ -153,7 +153,7 @@ func TestPut(t *testing.T) {
 			name: "IgnoreValue PrevKv",
 			testcases: []TestCase{
 				{
-					request: &etcd.RangeRequest{Key: "put_", RangeEnd: getPrefix("put_")},
+					request: &etcd.RangeRequest{Key: "put_", RangeEnd: etcd.GetPrefix("put_")},
 					response: &etcd.RangeResponse{
 						Count: 1,
 						Kvs: []*etcd.KeyValue{
@@ -166,7 +166,7 @@ func TestPut(t *testing.T) {
 					response: &etcd.PutResponse{PrevKv: &etcd.KeyValue{Key: "put_key", ModRevision: -1, CreateRevision: -4, Version: 4, Value: "put_value2"}},
 				},
 				{
-					request: &etcd.RangeRequest{Key: "put_", RangeEnd: getPrefix("put_"), Revision: -1},
+					request: &etcd.RangeRequest{Key: "put_", RangeEnd: etcd.GetPrefix("put_"), Revision: -1},
 					response: &etcd.RangeResponse{
 						Count: 1,
 						Kvs: []*etcd.KeyValue{
@@ -175,7 +175,7 @@ func TestPut(t *testing.T) {
 					},
 				},
 				{
-					request: &etcd.RangeRequest{Key: "put_", RangeEnd: getPrefix("put_"), Revision: 0},
+					request: &etcd.RangeRequest{Key: "put_", RangeEnd: etcd.GetPrefix("put_"), Revision: 0},
 					response: &etcd.RangeResponse{
 						Count: 1,
 						Kvs: []*etcd.KeyValue{
@@ -207,7 +207,7 @@ func TestPut(t *testing.T) {
 			name: "TearDown",
 			testcases: []TestCase{
 				{
-					request:  &etcd.DeleteRequest{Key: "put_", RangeEnd: getPrefix("put_")},
+					request:  &etcd.DeleteRequest{Key: "put_", RangeEnd: etcd.GetPrefix("put_")},
 					response: &etcd.DeleteResponse{Deleted: 1, PrevKvs: []*etcd.KeyValue{}},
 				},
 			},
