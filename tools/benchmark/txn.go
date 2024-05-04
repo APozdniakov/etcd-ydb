@@ -47,9 +47,18 @@ func init() {
 }
 
 func txnFunc(_ *cobra.Command, _ []string) error {
-	client, err := etcd.NewClient(endpoint)
-	if err != nil {
-		return err
+	conns := make([]*etcd.Client, totalConns)
+	for i := range conns {
+		conn, err := etcd.NewClient(endpoint)
+		if err != nil {
+			return err
+		}
+		conns[i] = conn
+	}
+
+	clients := make([]*etcd.Client, totalClients)
+	for i := range clients {
+		clients[i] = conns[i%len(conns)]
 	}
 
 	bar := pb.New64(int64(txnTotal))
@@ -58,9 +67,9 @@ func txnFunc(_ *cobra.Command, _ []string) error {
 	ops := make(chan etcd.Request, totalClients)
 	rep := report.NewReport(totalClients)
 	var wg sync.WaitGroup
-	for range totalClients {
+	for i := range clients {
 		wg.Add(1)
-		go func() {
+		go func(client *etcd.Client) {
 			defer wg.Done()
 			for op := range ops {
 				start := time.Now()
@@ -68,7 +77,7 @@ func txnFunc(_ *cobra.Command, _ []string) error {
 				rep.Results() <- report.Result{TotalTime: time.Since(start), Err: err}
 				bar.Increment()
 			}
-		}()
+		}(clients[i])
 	}
 
 	go func() {
@@ -89,7 +98,11 @@ func txnFunc(_ *cobra.Command, _ []string) error {
 				}
 			}
 			rand.Shuffle(len(success), func(i, j int) { success[i], success[j] = success[j], success[i] })
-			op := &etcd.TxnRequest{Success: success}
+			var compare []etcd.Compare
+			if len(success) == 1 {
+				compare = []etcd.Compare{etcd.Compare{Key: string(key)}.Equal().SetModRevision(0)}
+			}
+			op := &etcd.TxnRequest{Compare: compare, Success: success}
 			ops <- op
 		}
 		close(ops)
