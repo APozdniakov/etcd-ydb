@@ -1,8 +1,10 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"math/rand"
+	"os"
 	"slices"
 	"strings"
 	"sync"
@@ -99,6 +101,12 @@ func kvFunc(_ *cobra.Command, _ []string) error {
 	wg.Wait()
 	close(rep.Results())
 	bar.Finish()
-	fmt.Printf("%#v\n", <-rc)
+	stats := <-rc
+	fmt.Fprintf(os.Stderr, "%#v\n", stats)
+	data, err := json.Marshal(stats)
+	if err != nil {
+		return err
+	}
+	fmt.Println(string(data))
 	return nil
 }
