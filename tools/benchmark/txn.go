@@ -23,27 +23,22 @@ var txnCmd = &cobra.Command{
 }
 
 var (
-	txnTotal     uint64
-	txnReadRatio float64
-
-	txnRangeLimit int64
-
+	txnTotal        uint64
 	txnKeySize      uint64
 	txnValSize      uint64
 	txnKeySpaceSize uint64
-
-	txnOpsPerTxn uint64
+	txnOpsPerTxn    uint64
+	txnReadRatio    float64
 )
 
 func init() {
 	RootCmd.AddCommand(txnCmd)
 	txnCmd.Flags().Uint64Var(&txnTotal, "total", 10000, "Total number of txn requests")
-	txnCmd.Flags().Float64Var(&txnReadRatio, "read-ratio", 0.5, "Read/all ops ratio")
-	txnCmd.Flags().Int64Var(&txnRangeLimit, "limit", 1000, "Read operation range result limit")
 	txnCmd.Flags().Uint64Var(&txnKeySize, "key-size", 8, "Key size of txn")
 	txnCmd.Flags().Uint64Var(&txnValSize, "val-size", 8, "Value size of txn")
 	txnCmd.Flags().Uint64Var(&txnKeySpaceSize, "key-space-size", 1, "Maximum possible keys")
 	txnCmd.Flags().Uint64Var(&txnOpsPerTxn, "txn-ops", 1, "Number of puts per txn")
+	txnCmd.Flags().Float64Var(&txnReadRatio, "read-ratio", 0.5, "Read/all ops ratio")
 }
 
 func txnFunc(_ *cobra.Command, _ []string) error {
@@ -83,25 +78,27 @@ func txnFunc(_ *cobra.Command, _ []string) error {
 	go func() {
 		key, value := []byte(strings.Repeat("-", int(txnKeySize))), strings.Repeat("-", int(txnValSize))
 		for range txnTotal {
+			var compare []etcd.Compare
+			if txnOpsPerTxn == 1 {
+				compare = []etcd.Compare{etcd.Compare{Key: string(key)}.Equal().SetModRevision(0)}
+			}
+
 			success := make([]etcd.Request, txnOpsPerTxn)
 			for i := range success {
+				j := 0
+				for n := rand.Uint64() % txnKeySpaceSize; n > 0; n /= 10 {
+					key[j] = byte('0' + n%10)
+					j++
+				}
+				slices.Reverse(key[:j])
 				if i < int(txnReadRatio*float64(len(success))) {
-					success[i] = &etcd.RangeRequest{Key: etcd.EmptyKey, RangeEnd: etcd.EmptyKey, Limit: txnRangeLimit}
+					success[i] = &etcd.RangeRequest{Key: string(key)}
 				} else {
-					i := 0
-					for n := rand.Uint64() % kvKeySpaceSize; n > 0; n /= 10 {
-						key[i] = byte('0' + n%10)
-						i++
-					}
-					slices.Reverse(key[:i])
 					success[i] = &etcd.PutRequest{Key: string(key), Value: value}
 				}
 			}
 			rand.Shuffle(len(success), func(i, j int) { success[i], success[j] = success[j], success[i] })
-			var compare []etcd.Compare
-			if len(success) == 1 {
-				compare = []etcd.Compare{etcd.Compare{Key: string(key)}.Equal().SetModRevision(0)}
-			}
+
 			op := &etcd.TxnRequest{Compare: compare, Success: success}
 			ops <- op
 		}
