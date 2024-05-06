@@ -1,6 +1,7 @@
 package etcd_test
 
 import (
+	"math"
 	"testing"
 
 	"go.etcd.io/etcd/api/v3/v3rpc/rpctypes"
@@ -11,7 +12,11 @@ import (
 func fillTxnRequest(revision *int64, request *etcd.TxnRequest) {
 	for _, compare := range request.Compare {
 		if compare.ModRevision != nil {
-			*compare.ModRevision += *revision
+			if *compare.ModRevision == math.MinInt64 {
+				*compare.ModRevision = 0
+			} else {
+				*compare.ModRevision += *revision
+			}
 		}
 		if compare.CreateRevision != nil {
 			*compare.CreateRevision += *revision
@@ -134,6 +139,33 @@ func TestTxn(t *testing.T) {
 						Kvs: []*etcd.KeyValue{
 							{Key: "txn_key1", ModRevision: 0, CreateRevision: 0, Version: 1, Value: "txn_value1"},
 						},
+					},
+				},
+			},
+		},
+		{
+			name: "Check Absence",
+			testcases: []TestCase{
+				{
+					request: &etcd.TxnRequest{
+						Compare: []etcd.Compare{etcd.Compare{Key: "txn_key1"}.Equal().SetModRevision(math.MinInt64)},
+						Success: []etcd.Request{},
+						Failure: []etcd.Request{},
+					},
+					response: &etcd.TxnResponse{
+						Succeeded: false,
+						Responses: []etcd.Response{},
+					},
+				},
+				{
+					request: &etcd.TxnRequest{
+						Compare: []etcd.Compare{etcd.Compare{Key: "txn_key2"}.Equal().SetModRevision(math.MinInt64)},
+						Success: []etcd.Request{},
+						Failure: []etcd.Request{},
+					},
+					response: &etcd.TxnResponse{
+						Succeeded: true,
+						Responses: []etcd.Response{},
 					},
 				},
 			},

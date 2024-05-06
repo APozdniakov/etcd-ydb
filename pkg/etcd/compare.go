@@ -6,7 +6,6 @@ import (
 
 type Compare struct {
 	Key            string
-	RangeEnd       string
 	Result         etcdserverpb.Compare_CompareResult
 	ModRevision    *int64
 	CreateRevision *int64
@@ -57,7 +56,6 @@ func (compare Compare) SetValue(value string) Compare {
 func serializeCompare(compare Compare) *etcdserverpb.Compare {
 	result := &etcdserverpb.Compare{
 		Key:      []byte(compare.Key),
-		RangeEnd: []byte(compare.RangeEnd),
 		Result:   compare.Result,
 	}
 	switch {
