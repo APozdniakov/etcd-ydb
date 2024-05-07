@@ -20,16 +20,17 @@ function stop_ydb {
 
 ## $1: operation
 ## $2: total
-## $3: read-ratio
-## $4: txn-ops
+## $3: txn-ops
 function get_args {
     ETCDCTL_FLAGS="--key-size=11_700 --val-size=11_700 --key-space-size=20_000_000_000 --total=$2"
     if [[ "$1" == "put" ]]; then
         echo "$ETCDCTL_FLAGS"
     elif [[ "$1" == "range" ]]; then
         echo "$ETCDCTL_FLAGS"
-    elif [[ "$1" == "txn" ]]; then
-        echo "$ETCDCTL_FLAGS --read-ratio=$3 --txn-ops=$4"
+    elif [[ "$1" == "txn-put" ]]; then
+        echo "$ETCDCTL_FLAGS --txn-ops=$3"
+    elif [[ "$1" == "txn-range" ]]; then
+        echo "$ETCDCTL_FLAGS --txn-ops=$3"
     fi
 }
 
@@ -44,38 +45,54 @@ function endpoint {
 
 ## $1: target
 ## $2: operation
-## $3: endpoint
-## $4: read-ratio
-## $5: txn-ops
+## $3: total
+## $4: txn-ops
+## $5: counter
 function run {
-    COUNTER=1
+    echo "go run . --clients=1000 --conns=100 --endpoint=$(endpoint $1)    $2  $(get_args $2 $3 $4)"
+    time  go run . --clients=1000 --conns=100 --endpoint="$(endpoint $1)" "$2" $(get_args "$2" "$3" "$4") > "result/$1/$2/$4/$5.json"
+}
+
+## $1: target
+## $2: operation
+## $3: txn-ops
+function fill {
+    echo "START $1"
     start_$1
-    for TOTAL in "40_000" "120_000" "80_000" "40_000" "40_000" "40_000" "40_000" "40_000" "40_000" "40_000"; do
-        echo $(get_args "$2" "$TOTAL" "$4" "$5")
-        time go run . --clients=1000 --conns=100 --endpoint="$3" "$2" $(get_args "$2" "$TOTAL" "$4" "$5") > "result/$1/$2/$4/$5/$COUNTER.json"
+
+    mkdir -p result/$1/$2/$3/
+    if [[ "$2" == "put" ]]; then
+        mkdir -p result/$1/range/
+    elif [[ "$2" == "txn-put" ]]; then
+        mkdir -p result/$1/txn-range/$3/
+    fi
+
+    COUNTER=1
+    for TOTAL in "40_000" "40_000" "40_000" "40_000" "40_000" "40_000" "40_000" "40_000" "40_000" "40_000" "40_000" "40_000" "40_000" "40_000" "40_000" "40_000"; do
+        run "$1" "$2" "$TOTAL" "$3" "$COUNTER"
         if [[ "$2" == "put" ]]; then
-            time go run . --clients=1000 --conns=100 --endpoint="$3" "range" $(get_args "range" "$TOTAL" "$4" "$5") > "result/$1/range/$4/$5/$COUNTER.json"
+            run "$1" "range" "$TOTAL" "$3" "$COUNTER"
+        elif [[ "$2" == "txn-put" ]]; then
+            run "$1" "txn-range" "$TOTAL" "$3" "$COUNTER"
         fi
         if [[ "$1" == "etcd" ]]; then
-            etcdctl --endpoints=$3 endpoint status -w table
+            echo "etcdctl --endpoints=$(endpoint $1) endpoint status -w table"
+            etcdctl --endpoints="$(endpoint $1)" endpoint status -w table
         fi
         COUNTER=$(($COUNTER +1))
     done
+    echo "STOP $1"
     stop_$1
 }
 
 function main() {
-    for TARGET in ydb; do
-        for OPERATION in put; do
+    for TARGET in etcd ydb; do
+        for OPERATION in put txn-put; do
             if [[ $OPERATION == "put" ]]; then
-                mkdir -p result/$TARGET/$OPERATION
-                run $TARGET $OPERATION $(endpoint $TARGET)
-            elif [[ $OPERATION == "txn" ]]; then
-                for READ_RATIO in 0 0.25 0.5 0.75; do
-                    for TXN_OPS in 1 8 64; do
-                        mkdir -p result/$TARGET/$OPERATION/$READ_RATIO/$TXN_OPS
-                        run $TARGET $OPERATION $(endpoint $TARGET) $READ_RATIO $TXN_OPS
-                    done
+                fill $TARGET $OPERATION
+            elif [[ $OPERATION == "txn-put" ]]; then
+                for TXN_OPS in 1 8 64; do
+                    fill $TARGET $OPERATION $TXN_OPS
                 done
             fi
         done

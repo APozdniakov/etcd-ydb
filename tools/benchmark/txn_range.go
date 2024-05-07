@@ -17,31 +17,29 @@ import (
 	"github.com/ydb-platform/etcd-ydb/pkg/report"
 )
 
-var txnCmd = &cobra.Command{
-	Use:  "txn",
-	RunE: txnFunc,
+var txnRangeCmd = &cobra.Command{
+	Use:  "txn-range",
+	RunE: txnRangeFunc,
 }
 
 var (
-	txnTotal        uint64
-	txnKeySize      uint64
-	txnValSize      uint64
-	txnKeySpaceSize uint64
-	txnOpsPerTxn    uint64
-	txnReadRatio    float64
+	txnRangeTotal        uint64
+	txnRangeKeySize      uint64
+	txnRangeValSize      uint64
+	txnRangeKeySpaceSize uint64
+	txnRangeOpsPerTxn    uint64
 )
 
 func init() {
-	RootCmd.AddCommand(txnCmd)
-	txnCmd.Flags().Uint64Var(&txnTotal, "total", 10000, "Total number of txn requests")
-	txnCmd.Flags().Uint64Var(&txnKeySize, "key-size", 8, "Key size of txn")
-	txnCmd.Flags().Uint64Var(&txnValSize, "val-size", 8, "Value size of txn")
-	txnCmd.Flags().Uint64Var(&txnKeySpaceSize, "key-space-size", 1, "Maximum possible keys")
-	txnCmd.Flags().Uint64Var(&txnOpsPerTxn, "txn-ops", 1, "Number of puts per txn")
-	txnCmd.Flags().Float64Var(&txnReadRatio, "read-ratio", 0.5, "Read/all ops ratio")
+	RootCmd.AddCommand(txnRangeCmd)
+	txnRangeCmd.Flags().Uint64Var(&txnRangeTotal, "total", 10000, "Total number of txn requests")
+	txnRangeCmd.Flags().Uint64Var(&txnRangeKeySize, "key-size", 8, "Key size of txn")
+	txnRangeCmd.Flags().Uint64Var(&txnRangeValSize, "val-size", 8, "Value size of txn")
+	txnRangeCmd.Flags().Uint64Var(&txnRangeKeySpaceSize, "key-space-size", 1, "Maximum possible keys")
+	txnRangeCmd.Flags().Uint64Var(&txnRangeOpsPerTxn, "txn-ops", 1, "Number of puts per txn")
 }
 
-func txnFunc(_ *cobra.Command, _ []string) error {
+func txnRangeFunc(_ *cobra.Command, _ []string) error {
 	conns := make([]*etcd.Client, totalConns)
 	for i := range conns {
 		conn, err := etcd.NewClient(endpoint)
@@ -56,7 +54,8 @@ func txnFunc(_ *cobra.Command, _ []string) error {
 		clients[i] = conns[i%len(conns)]
 	}
 
-	bar := pb.New64(int64(txnTotal))
+	txnRangeTotal /= txnRangeOpsPerTxn
+	bar := pb.New64(int64(txnRangeTotal))
 	bar.Start()
 
 	ops := make(chan etcd.Request, totalClients)
@@ -76,28 +75,23 @@ func txnFunc(_ *cobra.Command, _ []string) error {
 	}
 
 	go func() {
-		key, value := []byte(strings.Repeat("-", int(txnKeySize))), strings.Repeat("-", int(txnValSize))
-		for range txnTotal {
+		key := []byte(strings.Repeat("-", int(txnRangeKeySize)))
+		for range txnRangeTotal {
 			var compare []etcd.Compare
-			if txnOpsPerTxn == 1 {
+			if txnRangeOpsPerTxn == 1 {
 				compare = []etcd.Compare{etcd.Compare{Key: string(key)}.Equal().SetModRevision(0)}
 			}
 
-			success := make([]etcd.Request, txnOpsPerTxn)
+			success := make([]etcd.Request, txnRangeOpsPerTxn)
 			for i := range success {
 				j := 0
-				for n := rand.Uint64() % txnKeySpaceSize; n > 0; n /= 10 {
+				for n := rand.Uint64() % txnRangeKeySpaceSize; n > 0; n /= 10 {
 					key[j] = byte('0' + n%10)
 					j++
 				}
 				slices.Reverse(key[:j])
-				if i < int(txnReadRatio*float64(len(success))) {
-					success[i] = &etcd.RangeRequest{Key: string(key)}
-				} else {
-					success[i] = &etcd.PutRequest{Key: string(key), Value: value}
-				}
+				success[i] = &etcd.RangeRequest{Key: string(key)}
 			}
-			rand.Shuffle(len(success), func(i, j int) { success[i], success[j] = success[j], success[i] })
 
 			op := &etcd.TxnRequest{Compare: compare, Success: success}
 			ops <- op
