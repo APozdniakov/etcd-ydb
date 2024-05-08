@@ -13,11 +13,11 @@ def parse_args() -> argparse.Namespace:
 
 def main(args: argparse.Namespace) -> None:
     for dir in list(map(Dir, args.dirs)):
-        stats = [parse_stats(file.native.name, file.lines) for file in dir.files]
+        stats = [parse_stats(file.native.stem, file.lines) for file in dir.files]
         plot = draw(stats)
-        plot.settitle(f"Benchmark results for different fill rate for {dir.native.name}")
+        plot.settitle(f"Benchmark results for different fill rate for {str(dir.native).replace('/', ' ')}")
         if args.save:
-            plot.save(dir.native / "plot.png")
+            plot.save(dir.native / f"{str(dir.native).replace('/', '_')}_plot.png")
         else:
             plot.show()
 

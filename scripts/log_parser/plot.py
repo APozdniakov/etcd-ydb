@@ -21,8 +21,8 @@ class Plot:
 
 
 def draw(stats: List[Stats]) -> Plot:
-    fig, ax = plt.subplots(figsize=(10, len(stats) * 4.8))
-    width = 0.1
+    fig, ax = plt.subplots(figsize=(len(stats), 8))
+    width = 0.05
     xs = np.arange(len(PERCENTILES))
     colors = reversed(plt.colormaps["RdYlGn"](np.linspace(0, 1, len(stats))))
     for (index, (stat, color)) in enumerate(zip(stats, colors)):
