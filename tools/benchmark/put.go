@@ -1,8 +1,10 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+	"math"
 	"math/rand"
 	"os"
 	"slices"
@@ -12,6 +14,7 @@ import (
 
 	"github.com/cheggaaa/pb/v3"
 	"github.com/spf13/cobra"
+	"golang.org/x/time/rate"
 
 	"github.com/ydb-platform/etcd-ydb/pkg/etcd"
 	"github.com/ydb-platform/etcd-ydb/pkg/report"
@@ -23,18 +26,18 @@ var putCmd = &cobra.Command{
 }
 
 var (
-	putTotal        uint64
-	putKeySize      uint64
-	putValSize      uint64
-	putKeySpaceSize uint64
+	putTotal     uint64
+	putRateLimit uint64
+	putKeySize   uint64
+	putValSize   uint64
 )
 
 func init() {
 	RootCmd.AddCommand(putCmd)
 	putCmd.Flags().Uint64Var(&putTotal, "total", 10000, "Total number of put requests")
+	putCmd.Flags().Uint64Var(&putRateLimit, "rate-limit", math.MaxUint64, "Maximum puts per second")
 	putCmd.Flags().Uint64Var(&putKeySize, "key-size", 8, "Key size of put request")
 	putCmd.Flags().Uint64Var(&putValSize, "val-size", 8, "Value size of put request")
-	putCmd.Flags().Uint64Var(&putKeySpaceSize, "key-space-size", 1, "Maximum possible keys")
 }
 
 func putFunc(_ *cobra.Command, _ []string) error {
@@ -46,11 +49,11 @@ func putFunc(_ *cobra.Command, _ []string) error {
 		}
 		conns[i] = conn
 	}
-
 	clients := make([]*etcd.Client, totalClients)
 	for i := range clients {
 		clients[i] = conns[i%len(conns)]
 	}
+	limit := rate.NewLimiter(rate.Limit(putRateLimit), 1)
 
 	bar := pb.New64(int64(putTotal))
 	bar.Start()
@@ -63,8 +66,10 @@ func putFunc(_ *cobra.Command, _ []string) error {
 		go func(client *etcd.Client) {
 			defer wg.Done()
 			for op := range ops {
+				limit.Wait(context.Background())
+
 				start := time.Now()
-				_, err := etcd.Do(client, op)
+				_, err := etcd.Do(context.Background(), client, op)
 				rep.Results() <- report.Result{TotalTime: time.Since(start), Err: err}
 				bar.Increment()
 			}
@@ -75,7 +80,7 @@ func putFunc(_ *cobra.Command, _ []string) error {
 		key, value := []byte(strings.Repeat("-", int(putKeySize))), strings.Repeat("-", int(putValSize))
 		for range putTotal {
 			j := 0
-			for n := rand.Uint64() % putKeySpaceSize; n > 0; n /= 10 {
+			for n := rand.Uint64(); n > 0; n /= 10 {
 				key[j] = byte('0' + n%10)
 				j++
 			}

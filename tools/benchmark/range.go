@@ -1,8 +1,10 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+	"math"
 	"math/rand"
 	"os"
 	"slices"
@@ -12,6 +14,7 @@ import (
 
 	"github.com/cheggaaa/pb/v3"
 	"github.com/spf13/cobra"
+	"golang.org/x/time/rate"
 
 	"github.com/ydb-platform/etcd-ydb/pkg/etcd"
 	"github.com/ydb-platform/etcd-ydb/pkg/report"
@@ -23,18 +26,18 @@ var rangeCmd = &cobra.Command{
 }
 
 var (
-	rangeTotal        uint64
-	rangeKeySize      uint64
-	rangeValSize      uint64
-	rangeKeySpaceSize uint64
+	rangeTotal     uint64
+	rangeRateLimit uint64
+	rangeKeySize   uint64
+	rangeValSize   uint64
 )
 
 func init() {
 	RootCmd.AddCommand(rangeCmd)
 	rangeCmd.Flags().Uint64Var(&rangeTotal, "total", 10000, "Total number of range requests")
+	rangeCmd.Flags().Uint64Var(&rangeRateLimit, "rate-limit", math.MaxUint64, "Maximum puts per second")
 	rangeCmd.Flags().Uint64Var(&rangeKeySize, "key-size", 8, "Key size of range request")
 	rangeCmd.Flags().Uint64Var(&rangeValSize, "val-size", 8, "Value size of range request")
-	rangeCmd.Flags().Uint64Var(&rangeKeySpaceSize, "key-space-size", 1, "Maximum possible keys")
 }
 
 func rangeFunc(_ *cobra.Command, _ []string) error {
@@ -46,11 +49,11 @@ func rangeFunc(_ *cobra.Command, _ []string) error {
 		}
 		conns[i] = conn
 	}
-
 	clients := make([]*etcd.Client, totalClients)
 	for i := range clients {
 		clients[i] = conns[i%len(conns)]
 	}
+	limit := rate.NewLimiter(rate.Limit(rangeRateLimit), 1)
 
 	bar := pb.New64(int64(rangeTotal))
 	bar.Start()
@@ -63,8 +66,10 @@ func rangeFunc(_ *cobra.Command, _ []string) error {
 		go func(client *etcd.Client) {
 			defer wg.Done()
 			for op := range ops {
+				limit.Wait(context.Background())
+
 				start := time.Now()
-				_, err := etcd.Do(client, op)
+				_, err := etcd.Do(context.Background(), client, op)
 				rep.Results() <- report.Result{TotalTime: time.Since(start), Err: err}
 				bar.Increment()
 			}
@@ -75,7 +80,7 @@ func rangeFunc(_ *cobra.Command, _ []string) error {
 		key := []byte(strings.Repeat("-", int(rangeKeySize)))
 		for range rangeTotal {
 			j := 0
-			for n := rand.Uint64() % rangeKeySpaceSize; n > 0; n /= 10 {
+			for n := rand.Uint64(); n > 0; n /= 10 {
 				key[j] = byte('0' + n%10)
 				j++
 			}

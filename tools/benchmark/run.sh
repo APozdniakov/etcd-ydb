@@ -22,7 +22,7 @@ function stop_ydb {
 ## $2: total
 ## $3: txn-ops
 function get_args {
-    ETCDCTL_FLAGS="--key-size=11_700 --val-size=11_700 --key-space-size=20_000_000_000 --total=$2"
+    ETCDCTL_FLAGS="--rate-limit=10_000 --key-size=11_700 --val-size=11_700 --total=$2"
     if [[ "$1" == "put" ]]; then
         echo "$ETCDCTL_FLAGS"
     elif [[ "$1" == "range" ]]; then
@@ -49,7 +49,7 @@ function endpoint {
 ## $4: txn-ops
 ## $5: counter
 function run {
-    echo "go run . --clients=1000 --conns=100 --endpoint=$(endpoint $1)    $2  $(get_args $2 $3 $4)"
+    echo "go run . --clients=1000 --conns=100 --endpoint=$(endpoint $1) $2 $(get_args $2 $3 $4) > result/$1/$2/$4/$5.json"
     time  go run . --clients=1000 --conns=100 --endpoint="$(endpoint $1)" "$2" $(get_args "$2" "$3" "$4") > "result/$1/$2/$4/$5.json"
 }
 
@@ -81,6 +81,7 @@ function fill {
         fi
         COUNTER=$(($COUNTER +1))
     done
+
     echo "STOP $1"
     stop_$1
 }

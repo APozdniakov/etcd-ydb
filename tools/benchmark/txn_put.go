@@ -1,8 +1,10 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+	"math"
 	"math/rand"
 	"os"
 	"slices"
@@ -12,6 +14,7 @@ import (
 
 	"github.com/cheggaaa/pb/v3"
 	"github.com/spf13/cobra"
+	"golang.org/x/time/rate"
 
 	"github.com/ydb-platform/etcd-ydb/pkg/etcd"
 	"github.com/ydb-platform/etcd-ydb/pkg/report"
@@ -23,19 +26,19 @@ var txnPutCmd = &cobra.Command{
 }
 
 var (
-	txnPutTotal        uint64
-	txnPutKeySize      uint64
-	txnPutValSize      uint64
-	txnPutKeySpaceSize uint64
-	txnPutOpsPerTxn    uint64
+	txnPutTotal     uint64
+	txnPutRateLimit uint64
+	txnPutKeySize   uint64
+	txnPutValSize   uint64
+	txnPutOpsPerTxn uint64
 )
 
 func init() {
 	RootCmd.AddCommand(txnPutCmd)
 	txnPutCmd.Flags().Uint64Var(&txnPutTotal, "total", 10000, "Total number of txn requests")
+	txnPutCmd.Flags().Uint64Var(&txnPutRateLimit, "rate-limit", math.MaxUint64, "Maximum puts per second")
 	txnPutCmd.Flags().Uint64Var(&txnPutKeySize, "key-size", 8, "Key size of txn")
 	txnPutCmd.Flags().Uint64Var(&txnPutValSize, "val-size", 8, "Value size of txn")
-	txnPutCmd.Flags().Uint64Var(&txnPutKeySpaceSize, "key-space-size", 1, "Maximum possible keys")
 	txnPutCmd.Flags().Uint64Var(&txnPutOpsPerTxn, "txn-ops", 1, "Number of puts per txn")
 }
 
@@ -48,11 +51,11 @@ func txnPutFunc(_ *cobra.Command, _ []string) error {
 		}
 		conns[i] = conn
 	}
-
 	clients := make([]*etcd.Client, totalClients)
 	for i := range clients {
 		clients[i] = conns[i%len(conns)]
 	}
+	limit := rate.NewLimiter(rate.Limit(txnPutRateLimit), 1)
 
 	txnPutTotal /= txnPutOpsPerTxn
 	bar := pb.New64(int64(txnPutTotal))
@@ -66,8 +69,10 @@ func txnPutFunc(_ *cobra.Command, _ []string) error {
 		go func(client *etcd.Client) {
 			defer wg.Done()
 			for op := range ops {
+				limit.Wait(context.Background())
+
 				start := time.Now()
-				_, err := etcd.Do(client, op)
+				_, err := etcd.Do(context.Background(), client, op)
 				rep.Results() <- report.Result{TotalTime: time.Since(start), Err: err}
 				bar.Increment()
 			}
@@ -77,20 +82,20 @@ func txnPutFunc(_ *cobra.Command, _ []string) error {
 	go func() {
 		key, value := []byte(strings.Repeat("-", int(txnPutKeySize))), strings.Repeat("-", int(txnPutValSize))
 		for range txnPutTotal {
-			var compare []etcd.Compare
-			if txnPutOpsPerTxn == 1 {
-				compare = []etcd.Compare{etcd.Compare{Key: string(key)}.Equal().SetModRevision(0)}
-			}
-
 			success := make([]etcd.Request, txnPutOpsPerTxn)
 			for i := range success {
 				j := 0
-				for n := rand.Uint64() % txnPutKeySpaceSize; n > 0; n /= 10 {
+				for n := rand.Uint64(); n > 0; n /= 10 {
 					key[j] = byte('0' + n%10)
 					j++
 				}
 				slices.Reverse(key[:j])
 				success[i] = &etcd.PutRequest{Key: string(key), Value: value}
+			}
+
+			var compare []etcd.Compare
+			if txnPutOpsPerTxn == 1 {
+				compare = []etcd.Compare{etcd.Compare{Key: string(key)}.Equal().SetModRevision(0)}
 			}
 
 			op := &etcd.TxnRequest{Compare: compare, Success: success}
