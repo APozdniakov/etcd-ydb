@@ -1,6 +1,8 @@
 package etcd
 
 import (
+	"context"
+
 	"go.etcd.io/etcd/api/v3/etcdserverpb"
 )
 
@@ -97,8 +99,8 @@ func deserializeTxnResponse(response *etcdserverpb.TxnResponse) *TxnResponse {
 	return result
 }
 
-func Txn(client *Client, request *TxnRequest) (*TxnResponse, error) {
-	response, err := client.Txn(serializeTxnRequest(request))
+func Txn(ctx context.Context, client *Client, request *TxnRequest) (*TxnResponse, error) {
+	response, err := client.Txn(ctx, serializeTxnRequest(request))
 	if err != nil {
 		return nil, err
 	}

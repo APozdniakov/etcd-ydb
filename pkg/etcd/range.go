@@ -1,6 +1,8 @@
 package etcd
 
 import (
+	"context"
+
 	"go.etcd.io/etcd/api/v3/etcdserverpb"
 )
 
@@ -120,8 +122,8 @@ func deserializeRangeResponse(response *etcdserverpb.RangeResponse) *RangeRespon
 	return result
 }
 
-func Range(client *Client, request *RangeRequest) (*RangeResponse, error) {
-	response, err := client.Range(serializeRangeRequest(request))
+func Range(ctx context.Context, client *Client, request *RangeRequest) (*RangeResponse, error) {
+	response, err := client.Range(ctx, serializeRangeRequest(request))
 	if err != nil {
 		return nil, err
 	}

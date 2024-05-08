@@ -1,6 +1,8 @@
 package etcd
 
 import (
+	"context"
+
 	"go.etcd.io/etcd/api/v3/etcdserverpb"
 )
 
@@ -50,8 +52,8 @@ func deserializePutResponse(response *etcdserverpb.PutResponse) *PutResponse {
 	}
 }
 
-func Put(client *Client, request *PutRequest) (*PutResponse, error) {
-	response, err := client.Put(serializePutRequest(request))
+func Put(ctx context.Context, client *Client, request *PutRequest) (*PutResponse, error) {
+	response, err := client.Put(ctx, serializePutRequest(request))
 	if err != nil {
 		return nil, err
 	}

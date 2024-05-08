@@ -80,6 +80,10 @@ func TestTxn(t *testing.T) {
 			name: "SetUp",
 			testcases: []TestCase{
 				{
+					request:  &etcd.RangeRequest{Key: etcd.EmptyKey, RangeEnd: etcd.EmptyKey},
+					response: &etcd.RangeResponse{Count: 0, Kvs: []*etcd.KeyValue{}},
+				},
+				{
 					request: &etcd.TxnRequest{
 						Compare: []etcd.Compare{},
 						Success: []etcd.Request{
@@ -298,6 +302,10 @@ func TestTxn(t *testing.T) {
 							},
 						},
 					},
+				},
+				{
+					request:  &etcd.RangeRequest{Key: etcd.EmptyKey, RangeEnd: etcd.EmptyKey},
+					response: &etcd.RangeResponse{Count: 0, Kvs: []*etcd.KeyValue{}},
 				},
 			},
 		},

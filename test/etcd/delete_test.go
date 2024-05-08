@@ -24,6 +24,15 @@ func TestDelete(t *testing.T) {
 		testcases []TestCase
 	}{
 		{
+			name: "SetUp",
+			testcases: []TestCase{
+				{
+					request:  &etcd.RangeRequest{Key: etcd.EmptyKey, RangeEnd: etcd.EmptyKey},
+					response: &etcd.RangeResponse{Count: 0, Kvs: []*etcd.KeyValue{}},
+				},
+			},
+		},
+		{
 			name: "Basic EmptyKey",
 			testcases: []TestCase{
 				{
@@ -499,6 +508,15 @@ func TestDelete(t *testing.T) {
 					request:  &etcd.DeleteRequest{Key: "a", PrevKv: true},
 					response: &etcd.DeleteResponse{Deleted: 0, PrevKvs: []*etcd.KeyValue{}},
 				},
+				{
+					request:  &etcd.RangeRequest{Key: etcd.EmptyKey, RangeEnd: etcd.EmptyKey},
+					response: &etcd.RangeResponse{Count: 0, Kvs: []*etcd.KeyValue{}},
+				},
+			},
+		},
+		{
+			name: "TearDown",
+			testcases: []TestCase{
 				{
 					request:  &etcd.RangeRequest{Key: etcd.EmptyKey, RangeEnd: etcd.EmptyKey},
 					response: &etcd.RangeResponse{Count: 0, Kvs: []*etcd.KeyValue{}},

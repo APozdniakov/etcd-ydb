@@ -78,7 +78,7 @@ func (r *report) processResults() {
 	r.stats.Total = len(latencies)
 	r.stats.Fastest = latencies[0]
 	r.stats.Slowest = latencies[len(latencies)-1]
-	
+
 	var avgTotal time.Duration
 	for _, total := range latencies {
 		avgTotal += total

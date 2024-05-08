@@ -27,6 +27,10 @@ func TestPut(t *testing.T) {
 			name: "SetUp",
 			testcases: []TestCase{
 				{
+					request:  &etcd.RangeRequest{Key: etcd.EmptyKey, RangeEnd: etcd.EmptyKey},
+					response: &etcd.RangeResponse{Count: 0, Kvs: []*etcd.KeyValue{}},
+				},
+				{
 					request:  &etcd.PutRequest{Key: "put_key", Value: "put_value0", PrevKv: true},
 					response: &etcd.PutResponse{},
 				},
@@ -209,6 +213,10 @@ func TestPut(t *testing.T) {
 				{
 					request:  &etcd.DeleteRequest{Key: "put_", RangeEnd: etcd.GetPrefix("put_")},
 					response: &etcd.DeleteResponse{Deleted: 1, PrevKvs: []*etcd.KeyValue{}},
+				},
+				{
+					request:  &etcd.RangeRequest{Key: etcd.EmptyKey, RangeEnd: etcd.EmptyKey},
+					response: &etcd.RangeResponse{Count: 0, Kvs: []*etcd.KeyValue{}},
 				},
 			},
 		},

@@ -55,8 +55,8 @@ func (compare Compare) SetValue(value string) Compare {
 
 func serializeCompare(compare Compare) *etcdserverpb.Compare {
 	result := &etcdserverpb.Compare{
-		Key:      []byte(compare.Key),
-		Result:   compare.Result,
+		Key:    []byte(compare.Key),
+		Result: compare.Result,
 	}
 	switch {
 	case compare.ModRevision != nil:

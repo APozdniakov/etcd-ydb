@@ -29,7 +29,6 @@ var defaultCallOpts = []grpc.CallOption{
 type Client struct {
 	endpoint string
 	callOpts []grpc.CallOption
-	ctx      context.Context
 	kv       etcdserverpb.KVClient
 }
 
@@ -46,43 +45,42 @@ func NewClient(endpoint string) (*Client, error) {
 	return &Client{
 		endpoint: endpoint,
 		callOpts: defaultCallOpts,
-		ctx:      context.Background(),
 		kv:       etcdserverpb.NewKVClient(conn),
 	}, nil
 }
 
-func (client *Client) Range(request *etcdserverpb.RangeRequest) (*etcdserverpb.RangeResponse, error) {
-	return client.kv.Range(client.ctx, request, client.callOpts...)
+func (client *Client) Range(ctx context.Context, request *etcdserverpb.RangeRequest) (*etcdserverpb.RangeResponse, error) {
+	return client.kv.Range(ctx, request, client.callOpts...)
 }
 
-func (client *Client) Put(request *etcdserverpb.PutRequest) (*etcdserverpb.PutResponse, error) {
-	return client.kv.Put(client.ctx, request, client.callOpts...)
+func (client *Client) Put(ctx context.Context, request *etcdserverpb.PutRequest) (*etcdserverpb.PutResponse, error) {
+	return client.kv.Put(ctx, request, client.callOpts...)
 }
 
-func (client *Client) Delete(request *etcdserverpb.DeleteRangeRequest) (*etcdserverpb.DeleteRangeResponse, error) {
-	return client.kv.DeleteRange(client.ctx, request, client.callOpts...)
+func (client *Client) Delete(ctx context.Context, request *etcdserverpb.DeleteRangeRequest) (*etcdserverpb.DeleteRangeResponse, error) {
+	return client.kv.DeleteRange(ctx, request, client.callOpts...)
 }
 
-func (client *Client) Txn(request *etcdserverpb.TxnRequest) (*etcdserverpb.TxnResponse, error) {
-	return client.kv.Txn(client.ctx, request, client.callOpts...)
+func (client *Client) Txn(ctx context.Context, request *etcdserverpb.TxnRequest) (*etcdserverpb.TxnResponse, error) {
+	return client.kv.Txn(ctx, request, client.callOpts...)
 }
 
-func (client *Client) Compact(request *etcdserverpb.CompactionRequest) (*etcdserverpb.CompactionResponse, error) {
-	return client.kv.Compact(client.ctx, request, client.callOpts...)
+func (client *Client) Compact(ctx context.Context, request *etcdserverpb.CompactionRequest) (*etcdserverpb.CompactionResponse, error) {
+	return client.kv.Compact(ctx, request, client.callOpts...)
 }
 
-func Do(client *Client, request Request) (Response, error) {
+func Do(ctx context.Context, client *Client, request Request) (Response, error) {
 	switch r := request.(type) {
 	case *CompactRequest:
-		return Compact(client, r)
+		return Compact(ctx, client, r)
 	case *DeleteRequest:
-		return Delete(client, r)
+		return Delete(ctx, client, r)
 	case *PutRequest:
-		return Put(client, r)
+		return Put(ctx, client, r)
 	case *RangeRequest:
-		return Range(client, r)
+		return Range(ctx, client, r)
 	case *TxnRequest:
-		return Txn(client, r)
+		return Txn(ctx, client, r)
 	default:
 		panic("unknown request type")
 	}

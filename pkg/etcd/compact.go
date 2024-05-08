@@ -1,6 +1,8 @@
 package etcd
 
 import (
+	"context"
+
 	"go.etcd.io/etcd/api/v3/etcdserverpb"
 )
 
@@ -42,8 +44,8 @@ func deserializeCompactResponse(response *etcdserverpb.CompactionResponse) *Comp
 	}
 }
 
-func Compact(client *Client, request *CompactRequest) (*CompactResponse, error) {
-	response, err := client.Compact(serializeCompactRequest(request))
+func Compact(ctx context.Context, client *Client, request *CompactRequest) (*CompactResponse, error) {
+	response, err := client.Compact(ctx, serializeCompactRequest(request))
 	if err != nil {
 		return nil, err
 	}

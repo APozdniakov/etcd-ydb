@@ -25,6 +25,10 @@ func TestCompact(t *testing.T) {
 			name: "SetUp",
 			testcases: []TestCase{
 				{
+					request:  &etcd.RangeRequest{Key: etcd.EmptyKey, RangeEnd: etcd.EmptyKey},
+					response: &etcd.RangeResponse{Count: 0, Kvs: []*etcd.KeyValue{}},
+				},
+				{
 					request:  &etcd.PutRequest{Key: "compact_key", Value: "compact_value1", PrevKv: true},
 					response: &etcd.PutResponse{},
 				},
@@ -94,6 +98,10 @@ func TestCompact(t *testing.T) {
 							{Key: "compact_key", ModRevision: -1, CreateRevision: -2, Version: 2, Value: "compact_value2"},
 						},
 					},
+				},
+				{
+					request:  &etcd.RangeRequest{Key: etcd.EmptyKey, RangeEnd: etcd.EmptyKey},
+					response: &etcd.RangeResponse{Count: 0, Kvs: []*etcd.KeyValue{}},
 				},
 			},
 		},

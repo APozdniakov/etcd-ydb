@@ -1,6 +1,8 @@
 package etcd
 
 import (
+	"context"
+
 	"go.etcd.io/etcd/api/v3/etcdserverpb"
 )
 
@@ -54,8 +56,8 @@ func deserializeDeleteResponse(response *etcdserverpb.DeleteRangeResponse) *Dele
 	return result
 }
 
-func Delete(client *Client, request *DeleteRequest) (*DeleteResponse, error) {
-	response, err := client.Delete(serializeDeleteRequest(request))
+func Delete(ctx context.Context, client *Client, request *DeleteRequest) (*DeleteResponse, error) {
+	response, err := client.Delete(ctx, serializeDeleteRequest(request))
 	if err != nil {
 		return nil, err
 	}

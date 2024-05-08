@@ -1,6 +1,7 @@
 package etcd_test
 
 import (
+	"context"
 	"fmt"
 	"testing"
 
@@ -29,7 +30,7 @@ func runTestCase(t *testing.T, client *etcd.Client, tc TestCase) {
 	t.Helper()
 	fillRequest(revision, tc.request)
 	fmt.Printf(" request = %#v\n", tc.request)
-	actual, err := etcd.Do(client, tc.request)
+	actual, err := etcd.Do(context.Background(), client, tc.request)
 
 	if tc.err != nil {
 		assert.ErrorIs(t, err, tc.err)

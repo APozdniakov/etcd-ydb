@@ -43,6 +43,10 @@ func TestRange(t *testing.T) {
 			name: "SetUp",
 			testcases: []TestCase{
 				{
+					request:  &etcd.RangeRequest{Key: etcd.EmptyKey, RangeEnd: etcd.EmptyKey},
+					response: &etcd.RangeResponse{Count: 0, Kvs: []*etcd.KeyValue{}},
+				},
+				{
 					request:  &etcd.PutRequest{Key: "a", Value: "a", PrevKv: true},
 					response: &etcd.PutResponse{},
 				},
@@ -103,6 +107,20 @@ func TestRange(t *testing.T) {
 						Count: 1,
 						Kvs: []*etcd.KeyValue{
 							{Key: "range_key1", ModRevision: -3, CreateRevision: -4, Version: 2, Value: "range_value1"},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "Basic Range",
+			testcases: []TestCase{
+				{
+					request: &etcd.RangeRequest{Key: "range_key2", RangeEnd: "range_key3"},
+					response: &etcd.RangeResponse{
+						Count: 1,
+						Kvs: []*etcd.KeyValue{
+							{Key: "range_key2", ModRevision: -2, CreateRevision: -5, Version: 2, Value: "range_value2"},
 						},
 					},
 				},
@@ -496,6 +514,10 @@ func TestRange(t *testing.T) {
 							{Key: "z", ModRevision: -3, CreateRevision: -3, Version: 1, Value: "z"},
 						},
 					},
+				},
+				{
+					request:  &etcd.RangeRequest{Key: etcd.EmptyKey, RangeEnd: etcd.EmptyKey},
+					response: &etcd.RangeResponse{Count: 0, Kvs: []*etcd.KeyValue{}},
 				},
 			},
 		},
