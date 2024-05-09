@@ -35,11 +35,11 @@ var (
 
 func init() {
 	RootCmd.AddCommand(txnRangeCmd)
-	txnRangeCmd.Flags().Uint64Var(&txnRangeTotal, "total", 10000, "Total number of txn requests")
-	txnRangeCmd.Flags().Uint64Var(&txnRangeRateLimit, "rate-limit", math.MaxUint64, "Maximum puts per second")
-	txnRangeCmd.Flags().Uint64Var(&txnRangeKeySize, "key-size", 8, "Key size of txn")
-	txnRangeCmd.Flags().Uint64Var(&txnRangeValSize, "val-size", 8, "Value size of txn")
-	txnRangeCmd.Flags().Uint64Var(&txnRangeOpsPerTxn, "txn-ops", 1, "Number of puts per txn")
+	txnRangeCmd.Flags().Uint64Var(&txnRangeTotal, "total", 10000, "Total number of requests")
+	txnRangeCmd.Flags().Uint64Var(&txnRangeRateLimit, "rate-limit", math.MaxUint64, "Maximum requests per second")
+	txnRangeCmd.Flags().Uint64Var(&txnRangeKeySize, "key-size", 8, "Key size of request")
+	txnRangeCmd.Flags().Uint64Var(&txnRangeValSize, "val-size", 8, "Value size of request")
+	txnRangeCmd.Flags().Uint64Var(&txnRangeOpsPerTxn, "txn-ops", 1, "Number of ops per txn")
 }
 
 func txnRangeFunc(_ *cobra.Command, _ []string) error {
@@ -55,7 +55,7 @@ func txnRangeFunc(_ *cobra.Command, _ []string) error {
 	for i := range clients {
 		clients[i] = conns[i%len(conns)]
 	}
-	limit := rate.NewLimiter(rate.Limit(putRateLimit), 1)
+	limit := rate.NewLimiter(rate.Limit(txnRangeRateLimit), 1)
 
 	txnRangeTotal /= txnRangeOpsPerTxn
 	bar := pb.New64(int64(txnRangeTotal))

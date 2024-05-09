@@ -20,27 +20,29 @@ import (
 	"github.com/ydb-platform/etcd-ydb/pkg/report"
 )
 
-var rangeCmd = &cobra.Command{
-	Use:  "range",
-	RunE: rangeFunc,
+var mixedCmd = &cobra.Command{
+	Use:  "mixed",
+	RunE: mixedFunc,
 }
 
 var (
-	rangeTotal     uint64
-	rangeRateLimit uint64
-	rangeKeySize   uint64
-	rangeValSize   uint64
+	mixedTotal     uint64
+	mixedRateLimit uint64
+	mixedKeySize   uint64
+	mixedValSize   uint64
+	mixedReadRatio float64
 )
 
 func init() {
-	RootCmd.AddCommand(rangeCmd)
-	rangeCmd.Flags().Uint64Var(&rangeTotal, "total", 10000, "Total number of requests")
-	rangeCmd.Flags().Uint64Var(&rangeRateLimit, "rate-limit", math.MaxUint64, "Maximum requests per second")
-	rangeCmd.Flags().Uint64Var(&rangeKeySize, "key-size", 8, "Key size of request")
-	rangeCmd.Flags().Uint64Var(&rangeValSize, "val-size", 8, "Value size of request")
+	RootCmd.AddCommand(mixedCmd)
+	mixedCmd.Flags().Uint64Var(&mixedTotal, "total", 10000, "Total number of requests")
+	mixedCmd.Flags().Uint64Var(&mixedRateLimit, "rate-limit", math.MaxUint64, "Maximum requests per second")
+	mixedCmd.Flags().Uint64Var(&mixedKeySize, "key-size", 8, "Key size of request")
+	mixedCmd.Flags().Uint64Var(&mixedValSize, "val-size", 8, "Value size of request")
+	mixedCmd.Flags().Float64Var(&mixedReadRatio, "read-ratio", 0.5, "Read/all ops ratio")
 }
 
-func rangeFunc(_ *cobra.Command, _ []string) error {
+func mixedFunc(_ *cobra.Command, _ []string) error {
 	conns := make([]*etcd.Client, totalConns)
 	for i := range conns {
 		conn, err := etcd.NewClient(endpoint)
@@ -53,9 +55,9 @@ func rangeFunc(_ *cobra.Command, _ []string) error {
 	for i := range clients {
 		clients[i] = conns[i%len(conns)]
 	}
-	limit := rate.NewLimiter(rate.Limit(rangeRateLimit), 1)
+	limit := rate.NewLimiter(rate.Limit(mixedRateLimit), 1)
 
-	bar := pb.New64(int64(rangeTotal))
+	bar := pb.New64(int64(mixedTotal))
 	bar.Start()
 
 	ops := make(chan etcd.Request, totalClients)
@@ -77,15 +79,21 @@ func rangeFunc(_ *cobra.Command, _ []string) error {
 	}
 
 	go func() {
-		key := []byte(strings.Repeat("-", int(rangeKeySize)))
-		for range rangeTotal {
+		key, value := []byte(strings.Repeat("-", int(mixedKeySize))), strings.Repeat("-", int(mixedValSize))
+		for range mixedTotal {
 			j := 0
 			for n := rand.Uint64(); n > 0; n /= 10 {
 				key[j] = byte('0' + n%10)
 				j++
 			}
 			slices.Reverse(key[:j])
-			op := &etcd.RangeRequest{Key: string(key)}
+
+			var op etcd.Request
+			if rand.Float64() < mixedReadRatio {
+				op = &etcd.RangeRequest{Key: string(key)}
+			} else {
+				op = &etcd.PutRequest{Key: string(key), Value: value}
+			}
 			ops <- op
 		}
 		close(ops)

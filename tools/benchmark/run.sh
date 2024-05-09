@@ -27,10 +27,14 @@ function get_args {
         echo "$ETCDCTL_FLAGS"
     elif [[ "$1" == "range" ]]; then
         echo "$ETCDCTL_FLAGS"
+    elif [[ "$1" == "mixed" ]]; then
+        echo "$ETCDCTL_FLAGS --read-ratio=0.75"
     elif [[ "$1" == "txn-put" ]]; then
         echo "$ETCDCTL_FLAGS --txn-ops=$3"
     elif [[ "$1" == "txn-range" ]]; then
         echo "$ETCDCTL_FLAGS --txn-ops=$3"
+    elif [[ "$1" == "txn-mixed" ]]; then
+        echo "$ETCDCTL_FLAGS --txn-ops=$3 --read-ratio=0.75"
     fi
 }
 
@@ -49,8 +53,8 @@ function endpoint {
 ## $4: txn-ops
 ## $5: counter
 function run {
-    echo "go run . --clients=1000 --conns=100 --endpoint=$(endpoint $1) $2 $(get_args $2 $3 $4) > result/$1/$2/$4/$5.json"
-    time  go run . --clients=1000 --conns=100 --endpoint="$(endpoint $1)" "$2" $(get_args "$2" "$3" "$4") > "result/$1/$2/$4/$5.json"
+    echo "go run . --clients=100 --conns=10 --endpoint=$(endpoint $1) $2 $(get_args $2 $3 $4) > result/$1/$2/$4/$5.json"
+    time  go run . --clients=100 --conns=10 --endpoint="$(endpoint $1)" "$2" $(get_args "$2" "$3" "$4") > "result/$1/$2/$4/$5.json"
 }
 
 ## $1: target
@@ -88,10 +92,16 @@ function fill {
 
 function main() {
     for TARGET in etcd ydb; do
-        for OPERATION in put txn-put; do
+        for OPERATION in put mixed txn-put txn-mixed; do
             if [[ $OPERATION == "put" ]]; then
                 fill $TARGET $OPERATION
+            elif [[ $OPERATION == "mixed" ]]; then
+                fill $TARGET $OPERATION
             elif [[ $OPERATION == "txn-put" ]]; then
+                for TXN_OPS in 1 8 64; do
+                    fill $TARGET $OPERATION $TXN_OPS
+                done
+            elif [[ $OPERATION == "txn-mixed" ]]; then
                 for TXN_OPS in 1 8 64; do
                     fill $TARGET $OPERATION $TXN_OPS
                 done

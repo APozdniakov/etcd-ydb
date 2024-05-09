@@ -34,10 +34,10 @@ var (
 
 func init() {
 	RootCmd.AddCommand(putCmd)
-	putCmd.Flags().Uint64Var(&putTotal, "total", 10000, "Total number of put requests")
-	putCmd.Flags().Uint64Var(&putRateLimit, "rate-limit", math.MaxUint64, "Maximum puts per second")
-	putCmd.Flags().Uint64Var(&putKeySize, "key-size", 8, "Key size of put request")
-	putCmd.Flags().Uint64Var(&putValSize, "val-size", 8, "Value size of put request")
+	putCmd.Flags().Uint64Var(&putTotal, "total", 10000, "Total number of requests")
+	putCmd.Flags().Uint64Var(&putRateLimit, "rate-limit", math.MaxUint64, "Maximum requests per second")
+	putCmd.Flags().Uint64Var(&putKeySize, "key-size", 8, "Key size of request")
+	putCmd.Flags().Uint64Var(&putValSize, "val-size", 8, "Value size of request")
 }
 
 func putFunc(_ *cobra.Command, _ []string) error {

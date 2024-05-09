@@ -20,29 +20,31 @@ import (
 	"github.com/ydb-platform/etcd-ydb/pkg/report"
 )
 
-var txnPutCmd = &cobra.Command{
-	Use:  "txn-put",
-	RunE: txnPutFunc,
+var txnMixedCmd = &cobra.Command{
+	Use:  "txn-mixed",
+	RunE: txnMixedFunc,
 }
 
 var (
-	txnPutTotal     uint64
-	txnPutRateLimit uint64
-	txnPutKeySize   uint64
-	txnPutValSize   uint64
-	txnPutOpsPerTxn uint64
+	txnMixedTotal     uint64
+	txnMixedRateLimit uint64
+	txnMixedKeySize   uint64
+	txnMixedValSize   uint64
+	txnMixedOpsPerTxn uint64
+	txnMixedReadRatio float64
 )
 
 func init() {
-	RootCmd.AddCommand(txnPutCmd)
-	txnPutCmd.Flags().Uint64Var(&txnPutTotal, "total", 10000, "Total number of requests")
-	txnPutCmd.Flags().Uint64Var(&txnPutRateLimit, "rate-limit", math.MaxUint64, "Maximum requests per second")
-	txnPutCmd.Flags().Uint64Var(&txnPutKeySize, "key-size", 8, "Key size of request")
-	txnPutCmd.Flags().Uint64Var(&txnPutValSize, "val-size", 8, "Value size of request")
-	txnPutCmd.Flags().Uint64Var(&txnPutOpsPerTxn, "txn-ops", 1, "Number of ops per txn")
+	RootCmd.AddCommand(txnMixedCmd)
+	txnMixedCmd.Flags().Uint64Var(&txnMixedTotal, "total", 10000, "Total number of requests")
+	txnMixedCmd.Flags().Uint64Var(&txnMixedRateLimit, "rate-limit", math.MaxUint64, "Maximum requests per second")
+	txnMixedCmd.Flags().Uint64Var(&txnMixedKeySize, "key-size", 8, "Key size of request")
+	txnMixedCmd.Flags().Uint64Var(&txnMixedValSize, "val-size", 8, "Value size of request")
+	txnMixedCmd.Flags().Uint64Var(&txnMixedOpsPerTxn, "txn-ops", 1, "Number of ops per txn")
+	txnMixedCmd.Flags().Float64Var(&txnMixedReadRatio, "read-ratio", 0.5, "Read/all ops ratio")
 }
 
-func txnPutFunc(_ *cobra.Command, _ []string) error {
+func txnMixedFunc(_ *cobra.Command, _ []string) error {
 	conns := make([]*etcd.Client, totalConns)
 	for i := range conns {
 		conn, err := etcd.NewClient(endpoint)
@@ -55,10 +57,10 @@ func txnPutFunc(_ *cobra.Command, _ []string) error {
 	for i := range clients {
 		clients[i] = conns[i%len(conns)]
 	}
-	limit := rate.NewLimiter(rate.Limit(txnPutRateLimit), 1)
+	limit := rate.NewLimiter(rate.Limit(txnMixedRateLimit), 1)
 
-	txnPutTotal /= txnPutOpsPerTxn
-	bar := pb.New64(int64(txnPutTotal))
+	txnMixedTotal /= txnMixedOpsPerTxn
+	bar := pb.New64(int64(txnMixedTotal))
 	bar.Start()
 
 	ops := make(chan etcd.Request, totalClients)
@@ -80,9 +82,9 @@ func txnPutFunc(_ *cobra.Command, _ []string) error {
 	}
 
 	go func() {
-		key, value := []byte(strings.Repeat("-", int(txnPutKeySize))), strings.Repeat("-", int(txnPutValSize))
-		for range txnPutTotal {
-			success := make([]etcd.Request, txnPutOpsPerTxn)
+		key, value := []byte(strings.Repeat("-", int(txnMixedKeySize))), strings.Repeat("-", int(txnMixedKeySize))
+		for range txnMixedTotal {
+			success := make([]etcd.Request, txnMixedOpsPerTxn)
 			for i := range success {
 				j := 0
 				for n := rand.Uint64(); n > 0; n /= 10 {
@@ -90,11 +92,16 @@ func txnPutFunc(_ *cobra.Command, _ []string) error {
 					j++
 				}
 				slices.Reverse(key[:j])
-				success[i] = &etcd.PutRequest{Key: string(key), Value: value}
+				if rand.Float64() < txnMixedReadRatio {
+					success[i] = &etcd.RangeRequest{Key: string(key)}
+				} else {
+					success[i] = &etcd.PutRequest{Key: string(key), Value: value}
+				}
 			}
+			rand.Shuffle(len(success), func(i, j int) { success[i], success[j] = success[j], success[i] })
 
 			var compare []etcd.Compare
-			if txnPutOpsPerTxn == 1 {
+			if txnMixedOpsPerTxn == 1 {
 				compare = []etcd.Compare{etcd.Compare{Key: string(key)}.Equal().SetModRevision(0)}
 			}
 
