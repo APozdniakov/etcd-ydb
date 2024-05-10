@@ -22,19 +22,19 @@ function stop_ydb {
 ## $2: total
 ## $3: txn-ops
 function get_args {
-    ETCDCTL_FLAGS="--rate-limit=10_000 --key-size=11_700 --val-size=11_700 --total=$2"
+    ETCDCTL_FLAGS="--rate-limit=10_000 --key-size=11_700 --val-size=11_700 --key-space-size=20_000_000_000 --total=$2"
     if [[ "$1" == "put" ]]; then
         echo "$ETCDCTL_FLAGS"
     elif [[ "$1" == "range" ]]; then
         echo "$ETCDCTL_FLAGS"
     elif [[ "$1" == "mixed" ]]; then
-        echo "$ETCDCTL_FLAGS --read-ratio=0.75"
+        echo "$ETCDCTL_FLAGS --read-ratio=0.8"
     elif [[ "$1" == "txn-put" ]]; then
         echo "$ETCDCTL_FLAGS --txn-ops=$3"
     elif [[ "$1" == "txn-range" ]]; then
         echo "$ETCDCTL_FLAGS --txn-ops=$3"
     elif [[ "$1" == "txn-mixed" ]]; then
-        echo "$ETCDCTL_FLAGS --txn-ops=$3 --read-ratio=0.75"
+        echo "$ETCDCTL_FLAGS --txn-ops=$3 --read-ratio=0.8"
     fi
 }
 
@@ -53,8 +53,8 @@ function endpoint {
 ## $4: txn-ops
 ## $5: counter
 function run {
-    echo "go run . --clients=100 --conns=10 --endpoint=$(endpoint $1) $2 $(get_args $2 $3 $4) > result/$1/$2/$4/$5.json"
-    time  go run . --clients=100 --conns=10 --endpoint="$(endpoint $1)" "$2" $(get_args "$2" "$3" "$4") > "result/$1/$2/$4/$5.json"
+    echo "go run . --clients=1000 --conns=100 --endpoint=$(endpoint $1) $2 $(get_args $2 $3 $4) > result/$1/$2/$4/$5.json"
+    time  go run . --clients=1000 --conns=100 --endpoint="$(endpoint $1)" "$2" $(get_args "$2" "$3" "$4") > "result/$1/$2/$4/$5.json"
 }
 
 ## $1: target
@@ -75,7 +75,7 @@ function fill {
     for TOTAL in "40_000" "40_000" "40_000" "40_000" "40_000" "40_000" "40_000" "40_000" "40_000" "40_000" "40_000" "40_000" "40_000" "40_000" "40_000" "40_000"; do
         run "$1" "$2" "$TOTAL" "$3" "$COUNTER"
         if [[ "$2" == "put" ]]; then
-            run "$1" "range" "$TOTAL" "$3" "$COUNTER"
+            run "$1" "range" "1_000_000" "$3" "$COUNTER"
         elif [[ "$2" == "txn-put" ]]; then
             run "$1" "txn-range" "$TOTAL" "$3" "$COUNTER"
         fi

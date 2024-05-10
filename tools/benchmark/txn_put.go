@@ -26,11 +26,12 @@ var txnPutCmd = &cobra.Command{
 }
 
 var (
-	txnPutTotal     uint64
-	txnPutRateLimit uint64
-	txnPutKeySize   uint64
-	txnPutValSize   uint64
-	txnPutOpsPerTxn uint64
+	txnPutTotal        uint64
+	txnPutRateLimit    uint64
+	txnPutKeySize      uint64
+	txnPutValSize      uint64
+	txnPutKeySpaceSize uint64
+	txnPutOpsPerTxn    uint64
 )
 
 func init() {
@@ -39,6 +40,7 @@ func init() {
 	txnPutCmd.Flags().Uint64Var(&txnPutRateLimit, "rate-limit", math.MaxUint64, "Maximum requests per second")
 	txnPutCmd.Flags().Uint64Var(&txnPutKeySize, "key-size", 8, "Key size of request")
 	txnPutCmd.Flags().Uint64Var(&txnPutValSize, "val-size", 8, "Value size of request")
+	txnPutCmd.Flags().Uint64Var(&txnPutKeySpaceSize, "key-space-size", 1, "Maximum possible keys")
 	txnPutCmd.Flags().Uint64Var(&txnPutOpsPerTxn, "txn-ops", 1, "Number of ops per txn")
 }
 
@@ -85,7 +87,7 @@ func txnPutFunc(_ *cobra.Command, _ []string) error {
 			success := make([]etcd.Request, txnPutOpsPerTxn)
 			for i := range success {
 				j := 0
-				for n := rand.Uint64(); n > 0; n /= 10 {
+				for n := rand.Uint64() % txnPutKeySpaceSize; n > 0; n /= 10 {
 					key[j] = byte('0' + n%10)
 					j++
 				}

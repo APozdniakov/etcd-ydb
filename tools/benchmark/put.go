@@ -26,10 +26,11 @@ var putCmd = &cobra.Command{
 }
 
 var (
-	putTotal     uint64
-	putRateLimit uint64
-	putKeySize   uint64
-	putValSize   uint64
+	putTotal        uint64
+	putRateLimit    uint64
+	putKeySize      uint64
+	putValSize      uint64
+	putKeySpaceSize uint64
 )
 
 func init() {
@@ -38,6 +39,7 @@ func init() {
 	putCmd.Flags().Uint64Var(&putRateLimit, "rate-limit", math.MaxUint64, "Maximum requests per second")
 	putCmd.Flags().Uint64Var(&putKeySize, "key-size", 8, "Key size of request")
 	putCmd.Flags().Uint64Var(&putValSize, "val-size", 8, "Value size of request")
+	putCmd.Flags().Uint64Var(&putKeySpaceSize, "key-space-size", 1, "Maximum possible keys")
 }
 
 func putFunc(_ *cobra.Command, _ []string) error {
@@ -80,7 +82,7 @@ func putFunc(_ *cobra.Command, _ []string) error {
 		key, value := []byte(strings.Repeat("-", int(putKeySize))), strings.Repeat("-", int(putValSize))
 		for range putTotal {
 			j := 0
-			for n := rand.Uint64(); n > 0; n /= 10 {
+			for n := rand.Uint64() % putKeySpaceSize; n > 0; n /= 10 {
 				key[j] = byte('0' + n%10)
 				j++
 			}

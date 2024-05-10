@@ -26,11 +26,12 @@ var mixedCmd = &cobra.Command{
 }
 
 var (
-	mixedTotal     uint64
-	mixedRateLimit uint64
-	mixedKeySize   uint64
-	mixedValSize   uint64
-	mixedReadRatio float64
+	mixedTotal        uint64
+	mixedRateLimit    uint64
+	mixedKeySize      uint64
+	mixedValSize      uint64
+	mixedKeySpaceSize uint64
+	mixedReadRatio    float64
 )
 
 func init() {
@@ -39,6 +40,7 @@ func init() {
 	mixedCmd.Flags().Uint64Var(&mixedRateLimit, "rate-limit", math.MaxUint64, "Maximum requests per second")
 	mixedCmd.Flags().Uint64Var(&mixedKeySize, "key-size", 8, "Key size of request")
 	mixedCmd.Flags().Uint64Var(&mixedValSize, "val-size", 8, "Value size of request")
+	mixedCmd.Flags().Uint64Var(&mixedKeySpaceSize, "key-space-size", 1, "Maximum possible keys")
 	mixedCmd.Flags().Float64Var(&mixedReadRatio, "read-ratio", 0.5, "Read/all ops ratio")
 }
 
@@ -57,6 +59,7 @@ func mixedFunc(_ *cobra.Command, _ []string) error {
 	}
 	limit := rate.NewLimiter(rate.Limit(mixedRateLimit), 1)
 
+	mixedTotal = uint64(float64(mixedTotal) / (1 - mixedReadRatio))
 	bar := pb.New64(int64(mixedTotal))
 	bar.Start()
 
@@ -82,7 +85,7 @@ func mixedFunc(_ *cobra.Command, _ []string) error {
 		key, value := []byte(strings.Repeat("-", int(mixedKeySize))), strings.Repeat("-", int(mixedValSize))
 		for range mixedTotal {
 			j := 0
-			for n := rand.Uint64(); n > 0; n /= 10 {
+			for n := rand.Uint64() % mixedKeySpaceSize; n > 0; n /= 10 {
 				key[j] = byte('0' + n%10)
 				j++
 			}

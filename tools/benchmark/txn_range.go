@@ -26,11 +26,12 @@ var txnRangeCmd = &cobra.Command{
 }
 
 var (
-	txnRangeTotal     uint64
-	txnRangeRateLimit uint64
-	txnRangeKeySize   uint64
-	txnRangeValSize   uint64
-	txnRangeOpsPerTxn uint64
+	txnRangeTotal        uint64
+	txnRangeRateLimit    uint64
+	txnRangeKeySize      uint64
+	txnRangeValSize      uint64
+	txnRangeKeySpaceSize uint64
+	txnRangeOpsPerTxn    uint64
 )
 
 func init() {
@@ -39,6 +40,7 @@ func init() {
 	txnRangeCmd.Flags().Uint64Var(&txnRangeRateLimit, "rate-limit", math.MaxUint64, "Maximum requests per second")
 	txnRangeCmd.Flags().Uint64Var(&txnRangeKeySize, "key-size", 8, "Key size of request")
 	txnRangeCmd.Flags().Uint64Var(&txnRangeValSize, "val-size", 8, "Value size of request")
+	txnRangeCmd.Flags().Uint64Var(&txnRangeKeySpaceSize, "key-space-size", 1, "Maximum possible keys")
 	txnRangeCmd.Flags().Uint64Var(&txnRangeOpsPerTxn, "txn-ops", 1, "Number of ops per txn")
 }
 
@@ -85,7 +87,7 @@ func txnRangeFunc(_ *cobra.Command, _ []string) error {
 			success := make([]etcd.Request, txnRangeOpsPerTxn)
 			for i := range success {
 				j := 0
-				for n := rand.Uint64(); n > 0; n /= 10 {
+				for n := rand.Uint64() % txnRangeKeySpaceSize; n > 0; n /= 10 {
 					key[j] = byte('0' + n%10)
 					j++
 				}

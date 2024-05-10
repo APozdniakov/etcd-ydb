@@ -26,10 +26,11 @@ var rangeCmd = &cobra.Command{
 }
 
 var (
-	rangeTotal     uint64
-	rangeRateLimit uint64
-	rangeKeySize   uint64
-	rangeValSize   uint64
+	rangeTotal        uint64
+	rangeRateLimit    uint64
+	rangeKeySize      uint64
+	rangeValSize      uint64
+	rangeKeySpaceSize uint64
 )
 
 func init() {
@@ -38,6 +39,7 @@ func init() {
 	rangeCmd.Flags().Uint64Var(&rangeRateLimit, "rate-limit", math.MaxUint64, "Maximum requests per second")
 	rangeCmd.Flags().Uint64Var(&rangeKeySize, "key-size", 8, "Key size of request")
 	rangeCmd.Flags().Uint64Var(&rangeValSize, "val-size", 8, "Value size of request")
+	rangeCmd.Flags().Uint64Var(&rangeKeySpaceSize, "key-space-size", 1, "Maximum possible keys")
 }
 
 func rangeFunc(_ *cobra.Command, _ []string) error {
@@ -80,7 +82,7 @@ func rangeFunc(_ *cobra.Command, _ []string) error {
 		key := []byte(strings.Repeat("-", int(rangeKeySize)))
 		for range rangeTotal {
 			j := 0
-			for n := rand.Uint64(); n > 0; n /= 10 {
+			for n := rand.Uint64() % rangeKeySpaceSize; n > 0; n /= 10 {
 				key[j] = byte('0' + n%10)
 				j++
 			}

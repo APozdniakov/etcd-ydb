@@ -26,12 +26,13 @@ var txnMixedCmd = &cobra.Command{
 }
 
 var (
-	txnMixedTotal     uint64
-	txnMixedRateLimit uint64
-	txnMixedKeySize   uint64
-	txnMixedValSize   uint64
-	txnMixedOpsPerTxn uint64
-	txnMixedReadRatio float64
+	txnMixedTotal        uint64
+	txnMixedRateLimit    uint64
+	txnMixedKeySize      uint64
+	txnMixedValSize      uint64
+	txnMixedKeySpaceSize uint64
+	txnMixedOpsPerTxn    uint64
+	txnMixedReadRatio    float64
 )
 
 func init() {
@@ -40,6 +41,7 @@ func init() {
 	txnMixedCmd.Flags().Uint64Var(&txnMixedRateLimit, "rate-limit", math.MaxUint64, "Maximum requests per second")
 	txnMixedCmd.Flags().Uint64Var(&txnMixedKeySize, "key-size", 8, "Key size of request")
 	txnMixedCmd.Flags().Uint64Var(&txnMixedValSize, "val-size", 8, "Value size of request")
+	txnMixedCmd.Flags().Uint64Var(&txnMixedKeySpaceSize, "key-space-size", 1, "Maximum possible keys")
 	txnMixedCmd.Flags().Uint64Var(&txnMixedOpsPerTxn, "txn-ops", 1, "Number of ops per txn")
 	txnMixedCmd.Flags().Float64Var(&txnMixedReadRatio, "read-ratio", 0.5, "Read/all ops ratio")
 }
@@ -59,6 +61,7 @@ func txnMixedFunc(_ *cobra.Command, _ []string) error {
 	}
 	limit := rate.NewLimiter(rate.Limit(txnMixedRateLimit), 1)
 
+	txnMixedTotal = uint64(float64(txnMixedTotal) / (1 - txnMixedReadRatio))
 	txnMixedTotal /= txnMixedOpsPerTxn
 	bar := pb.New64(int64(txnMixedTotal))
 	bar.Start()
@@ -87,7 +90,7 @@ func txnMixedFunc(_ *cobra.Command, _ []string) error {
 			success := make([]etcd.Request, txnMixedOpsPerTxn)
 			for i := range success {
 				j := 0
-				for n := rand.Uint64(); n > 0; n /= 10 {
+				for n := rand.Uint64() % txnMixedKeySpaceSize; n > 0; n /= 10 {
 					key[j] = byte('0' + n%10)
 					j++
 				}
