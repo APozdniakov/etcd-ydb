@@ -3,10 +3,7 @@ from typing import List
 
 
 def read_dir(dir: Path) -> List[Path]:
-    return sorted(
-        [File(file) for file in dir.iterdir() if file.is_file() and file.suffix == ".json"],
-        key=lambda file: file.native.name
-    )
+    return [File(file) for file in dir.iterdir() if file.is_file() and file.suffix == ".json"]
 
 
 def read_file(file: Path) -> List[str]:

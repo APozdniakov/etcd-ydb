@@ -21,6 +21,7 @@ class Plot:
 
 
 def draw(stats: List[Stats]) -> Plot:
+    stats = sorted(stats, key=lambda stat: stat.label)
     fig, ax = plt.subplots(figsize=(len(stats), 8))
     width = 0.05
     xs = np.arange(len(PERCENTILES))
@@ -30,7 +31,7 @@ def draw(stats: List[Stats]) -> Plot:
         ax.bar(xs + index * width, stat.latencies, width=width, label=stat.label, color=color)
     ax.set_xlabel("percentiles (%)")
     ax.set_xticks(xs + (len(stats) - 1) / 2 * width, PERCENTILES)
-    ax.set_ylabel("response time (sec)")
+    ax.set_ylabel("response time (ns)")
     ax.legend()
     ax.set_title("Latency distributions")
     return Plot(fig)

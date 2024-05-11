@@ -19,4 +19,4 @@ class Stats:
 
 
 def parse_stats(label: str, lines: List[str]) -> Stats:
-    return Stats(f"{label.replace('_', '')} GB", json.loads("".join(lines)))
+    return Stats(f"{int(label)-1:02d}-{int(label):02d} GB", json.loads("".join(lines)))
