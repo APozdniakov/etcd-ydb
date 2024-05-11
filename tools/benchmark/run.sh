@@ -10,11 +10,11 @@ function stop_etcd {
 }
 
 function start_ydb {
-    ssh master '/home/user/services/ydb/ydbd/brrr.sh' 2> /dev/null
+    ssh master '/home/user/services/ydb/ydb/apps/ydbd/brrr.sh' 2> /dev/null
 }
 
 function stop_ydb {
-    ssh master '/home/user/services/ydb/ydbd/stop.sh' 2> /dev/null
+    ssh master '/home/user/services/ydb/ydb/apps/ydbd/stop.sh' 2> /dev/null
 }
 
 
@@ -22,7 +22,7 @@ function stop_ydb {
 ## $2: total
 ## $3: txn-ops
 function get_args {
-    ETCDCTL_FLAGS="--rate-limit=10_000 --key-size=11_700 --val-size=11_700 --key-space-size=20_000_000_000 --total=$2"
+    ETCDCTL_FLAGS="--rate-limit=1_000_000_000 --key-size=11_700 --val-size=11_700 --key-space-size=20_000_000_000 --total=$2"
     if [[ "$1" == "put" ]]; then
         echo "$ETCDCTL_FLAGS"
     elif [[ "$1" == "range" ]]; then
@@ -75,7 +75,7 @@ function fill {
     for TOTAL in "40_000" "40_000" "40_000" "40_000" "40_000" "40_000" "40_000" "40_000" "40_000" "40_000" "40_000" "40_000" "40_000" "40_000" "40_000" "40_000"; do
         run "$1" "$2" "$TOTAL" "$3" "$COUNTER"
         if [[ "$2" == "put" ]]; then
-            run "$1" "range" "1_000_000" "$3" "$COUNTER"
+            run "$1" "range" "$TOTAL" "$3" "$COUNTER"
         elif [[ "$2" == "txn-put" ]]; then
             run "$1" "txn-range" "$TOTAL" "$3" "$COUNTER"
         fi
