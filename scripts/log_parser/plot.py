@@ -1,8 +1,8 @@
 import numpy as np
-from matplotlib import axes
 from matplotlib import figure
 from matplotlib import pyplot as plt
-from typing import List
+import pandas as pd
+from typing import Dict, List
 from parse import PERCENTILES, Stats
 
 
@@ -20,18 +20,21 @@ class Plot:
         plt.show()
 
 
-def draw(stats: List[Stats]) -> Plot:
-    stats = sorted(stats, key=lambda stat: stat.label)
-    fig, ax = plt.subplots(figsize=(len(stats), 8))
-    width = 0.05
-    xs = np.arange(len(PERCENTILES))
-    colors = reversed(plt.colormaps["RdYlGn"](np.linspace(0, 1, len(stats))))
-    for (index, (stat, color)) in enumerate(zip(stats, colors)):
-        assert stat.percentiles == PERCENTILES
-        ax.bar(xs + index * width, stat.latencies, width=width, label=stat.label, color=color)
-    ax.set_xlabel("percentiles (%)")
-    ax.set_xticks(xs + (len(stats) - 1) / 2 * width, PERCENTILES)
-    ax.set_ylabel("response time (ns)")
-    ax.legend()
-    ax.set_title("Latency distributions")
+def draw(dirs: Dict[str, List[Stats]]) -> Plot:
+    df = pd.DataFrame([{"label": label, "name": stat.label, **stat.percentiles} for label, stats in dirs.items() for stat in stats], columns=["label", "name", *PERCENTILES])
+    fig, ax = plt.subplots(figsize=(2 * len(PERCENTILES),6))
+    colors = reversed(plt.colormaps["RdYlBu"](np.linspace(0, 1, len(dirs))))
+    legend = {}
+    for label, color in zip(dirs.keys(), colors):
+        for p_index, percentile in enumerate(PERCENTILES):
+            percentiles = df[df["label"] == label].sort_values("name")[percentile].to_numpy()
+            plot, = ax.plot(p_index + (np.arange(len(percentiles)) - (len(percentiles) - 1) / 2) * 0.05, percentiles, color=color)
+        legend[label] = plot
+    ax.set_xlabel("Перцентили (%)")
+    ax.set_xticks(np.arange(len(PERCENTILES)), PERCENTILES)
+    ax.set_ylabel("время ответа (нс)")
+    ax.set_yscale("log")
+    ax.legend(legend.values(), legend.keys())
+    ax.grid()
+    ax.set_title("Перцентили задержек")
     return Plot(fig)
