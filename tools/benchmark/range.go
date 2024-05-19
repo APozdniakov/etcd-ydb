@@ -43,17 +43,9 @@ func init() {
 }
 
 func rangeFunc(_ *cobra.Command, _ []string) error {
-	conns := make([]*etcd.Client, totalConns)
-	for i := range conns {
-		conn, err := etcd.NewClient(endpoint)
-		if err != nil {
-			return err
-		}
-		conns[i] = conn
-	}
-	clients := make([]*etcd.Client, totalClients)
-	for i := range clients {
-		clients[i] = conns[i%len(conns)]
+	clients, err := newClients()
+	if err != nil {
+		return err
 	}
 	limit := rate.NewLimiter(rate.Limit(rangeRateLimit), 1)
 

@@ -39,7 +39,7 @@ function get_args {
 }
 
 ## $1: target
-function endpoint {
+function endpoints {
     if [[ "$1" == "etcd" ]]; then
         echo "158.160.22.130:2379"
     elif [[ "$1" == "ydb" ]]; then
@@ -53,8 +53,8 @@ function endpoint {
 ## $4: txn-ops
 ## $5: counter
 function run {
-    echo "go run . --clients=1000 --conns=100 --endpoint=$(endpoint $1) $2 $(get_args $2 $3 $4) > result/$1/$2/$4/$5.json"
-    time  go run . --clients=1000 --conns=100 --endpoint="$(endpoint $1)" "$2" $(get_args "$2" "$3" "$4") > "result/$1/$2/$4/$5.json"
+    echo "go run . --clients=10 --conns=1 --endpoints=$(endpoints $1) $2 $(get_args $2 $3 $4) > result/$1/$2/$4/$5.json"
+    time  go run . --clients=10 --conns=1 --endpoints="$(endpoints $1)" "$2" $(get_args "$2" "$3" "$4") > "result/$1/$2/$4/$5.json"
 }
 
 ## $1: target
